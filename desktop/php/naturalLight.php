@@ -152,9 +152,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							<label class="col-sm-4 control-label">{{Température couleur}}</label>
 							<div class="col-xs-11 col-sm-6">
 								<div class="input-group">
-									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="temperature_color" data-concat="1" />
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="temperature_color" data-concat="0" />
 									<span class="input-group-btn">
-										<a class="btn btn-default listCmdInfo">
+										<a class="btn btn-default listCmdAction">
 											<i class="fas fa-list-alt"></i>
 										</a>
 									</span>
@@ -166,7 +166,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							<label class="col-sm-4 control-label">{{Lampe état}}</label>
 							<div class="col-xs-11 col-sm-6">
 								<div class="input-group">
-									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="1" />
+									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
 									<span class="input-group-btn">
 										<a class="btn btn-default listCmdInfo">
 											<i class="fas fa-list-alt"></i>
