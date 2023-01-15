@@ -144,13 +144,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			</div><!-- /.tabpanel #eqlogictab-->
 
 			<!-- Onglet de configuration de l'équipement -->
-			<div role="tabpanel" class="tab-pane active" id="lighttab">
+			<div role="tabpanel" class="tab-pane" id="lighttab">
 				<!-- Commande de la lumières -->
 				<form class="form-horizontal">
 					<fieldset>
-					<legend><i class="fas fa-thermometer-empty" aria-hidden="true"></i> {{Sonde de température}}</legend>
-
-					    <div class="form-group">
+						<div class="form-group">
 							<label class="col-sm-4 control-label">{{Température couleur}}</label>
 							<div class="col-xs-11 col-sm-6">
 								<div class="input-group">
@@ -162,7 +160,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									</span>
 								</div>
 							</div>
-                        </div>
+						</div>
 
 						<div class="form-group">
 							<label class="col-sm-4 control-label">{{Lampe état}}</label>
