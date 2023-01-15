@@ -3,7 +3,7 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 // Déclaration des variables obligatoires
-$plugin = plugin::byId('template');
+$plugin = plugin::byId('naturalLight');
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
@@ -28,7 +28,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		<legend><i class="fas fa-table"></i> {{Mes templates}}</legend>
 		<?php
 		if (count($eqLogics) == 0) {
-			echo '<br><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement Template trouvé, cliquer sur "Ajouter" pour commencer}}</div>';
+			echo '<br><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement Natural Light trouvé, cliquer sur "Ajouter" pour commencer}}</div>';
 		} else {
 			// Champ de recherche
 			echo '<div class="input-group" style="margin:5px;">';
