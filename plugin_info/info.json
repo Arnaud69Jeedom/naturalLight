@@ -1,0 +1,31 @@
+{
+	"id" : "naturalLight",
+	"name" : "naturalLight",
+	"description" : {
+		"fr_FR": "plugins naturalLight pour Jeedom"
+	},
+	"licence" : "AGPL",
+	"author" : "arnaud69",
+	"require" : "4.2.0",
+	"category" : "automation",
+	"hasDependency" : false,
+	"hasOwnDeamon" : false,
+	"maxDependancyInstallTime" : 0,
+	"changelog" : "https://jeedom.github.io/naturalLight/#language#/changelog",
+	"documentation" : "https://jeedom.github.io/naturalLight/#language#/",
+	"changelog_beta" : "https://jeedom.github.io/naturalLight/#language#/beta/changelog",
+	"documentation_beta" : "https://jeedom.github.io/naturalLight/#language#/beta/",
+	"language": [
+		"fr_FR"
+	],
+	"compatibility": [
+		"miniplus",
+		"smart",
+		"rpi",
+		"docker",
+		"diy",
+		"mobile",
+		"v4",
+		"atlas"
+	]
+}
