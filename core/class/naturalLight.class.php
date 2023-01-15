@@ -17,6 +17,9 @@
 
 /* * ***************************Includes********************************* */
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
+require_once dirname(__FILE__) . '/../../vendor/autoload.php';
+
+define('PLUGIN_NAME', 'naturalLight');
 
 class naturalLight extends eqLogic {
   /*     * *************************Attributs****************************** */
@@ -36,39 +39,22 @@ class naturalLight extends eqLogic {
   /*     * ***********************Methode static*************************** */
 
   /*
-  * Fonction exécutée automatiquement toutes les minutes par Jeedom
-  public static function cron() {}
-  */
-
-  /*
-  * Fonction exécutée automatiquement toutes les 5 minutes par Jeedom
-  public static function cron5() {}
-  */
-
-  /*
-  * Fonction exécutée automatiquement toutes les 10 minutes par Jeedom
-  public static function cron10() {}
-  */
-
-  /*
   * Fonction exécutée automatiquement toutes les 15 minutes par Jeedom
-  public static function cron15() {}
   */
+  public static function cron15() {
+    log::add(PLUGIN_NAME, 'debug', '*** cron ***');
 
-  /*
-  * Fonction exécutée automatiquement toutes les 30 minutes par Jeedom
-  public static function cron30() {}
-  */
+        foreach (eqLogic::byType(__CLASS__, true) as $light) {
+            if ($light->getIsEnable() == 1) {
+                $cmd = $light->getCmd(null, 'refresh');
+                if (!is_object($cmd)) {
+                    continue;
+                }
+                $cmd->execCmd();
+            }
+        }
+  }
 
-  /*
-  * Fonction exécutée automatiquement toutes les heures par Jeedom
-  public static function cronHourly() {}
-  */
-
-  /*
-  * Fonction exécutée automatiquement tous les jours par Jeedom
-  public static function cronDaily() {}
-  */
 
   /*     * *********************Méthodes d'instance************************* */
 
@@ -94,6 +80,60 @@ class naturalLight extends eqLogic {
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
   public function postSave() {
+    log::add(PLUGIN_NAME, 'debug', 'postSave');
+
+    // windows_action
+    $sunElevation = $this->getCmd(null, 'sun_elevation');
+    if (!is_object($sunElevation)) {
+        $sunElevation = new windowsCmd();
+        $sunElevation->setLogicalId('sun_elevation');
+        $sunElevation->setName(__('Sun Elevation', __FILE__));
+        $sunElevation->setIsVisible(1);
+        $sunElevation->setIsHistorized(0);
+        $sunElevation->setUnite('°');
+    }
+    $sunElevation->setEqLogic_id($this->getId());
+    $sunElevation->setType('info');
+    $sunElevation->setSubType('numeric');
+    $sunElevation->setGeneric_type('GENERIC_INFO');
+
+    $sunElevation->save();
+    unset($sunElevation);
+
+    // windows_action
+    $temperatureColor = $this->getCmd(null, 'temperature_color');
+    if (!is_object($temperatureColor)) {
+        $temperatureColor = new windowsCmd();
+        $temperatureColor->setLogicalId('temperature_color');
+        $temperatureColor->setName(__('Temperature color', __FILE__));
+        $temperatureColor->setIsVisible(1);
+        $temperatureColor->setIsHistorized(0);
+        $temperatureColor->setUnite('mired');
+    }
+    $temperatureColor->setEqLogic_id($this->getId());
+    $temperatureColor->setType('info');
+    $temperatureColor->setSubType('numeric');
+    $temperatureColor->setGeneric_type('LIGHT_COLOR_TEMP');
+
+    // $value = false;
+    // $sunElevation->setValue($value);
+    $temperatureColor->save();
+    unset($temperatureColor);
+
+    // refresh
+    $refresh = $this->getCmd(null, 'refresh');
+    if (!is_object($refresh)) {
+        $refresh = new windowsCmd();
+        $refresh->setLogicalId('refresh');
+        $refresh->setIsVisible(1);
+        $refresh->setName(__('Rafraichir', __FILE__));
+        $refresh->setOrder(0);
+    }
+    $refresh->setEqLogic_id($this->getId());
+    $refresh->setType('action');
+    $refresh->setSubType('other');
+    $refresh->save();
+    unset($refresh);
   }
 
   // Fonction exécutée automatiquement avant la suppression de l'équipement
@@ -162,8 +202,141 @@ class naturalLightCmd extends cmd {
 
   // Exécution d'une commande
   public function execute($_options = array()) {
+    log::add(PLUGIN_NAME, 'info', ' **** execute ****', __FILE__);
+
+    try {
+      $eqlogic = $this->getEqLogic(); //récupère l'éqlogic de la commande $this
+
+      // Calculer Sun elevation
+      $sunElevation = $this->computeSunElevation();
+
+      // Obtenir état de la lampe
+      $state = 0;
+      $lamp_state = $eqlogic->getConfiguration('lamp_state');
+      $lamp_state = str_replace('#', '', $lamp_state);
+      if ($lamp_state != '') {
+        $cmd = cmd::byId($lamp_state);
+        if ($cmd == null) {
+          log::add(PLUGIN_NAME, 'error', ' Mauvaise lamp_state :' . $lamp_state, __FILE__);
+          throw new Exception();
+        } else {
+          $state = $cmd->execCmd();
+          log::add(PLUGIN_NAME, 'debug', '  lamp_state: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']:'.$state);
+        }
+      }
+
+      // Lumière éteinte : on ne fait rien
+      if ($state == 0) {
+        return;
+      }
+
+      // Calcul de la température couleur
+      $temp_color = intval(1000000/(4791.67 - 3290.66/(1 + 0.222 * $sunElevation * 0.81)));
+      log::add(PLUGIN_NAME, 'debug', '  temp_color: ' . $temp_color);
+
+      // Obtenir la commande Temperature Couleur
+      $temperature_color = $eqlogic->getConfiguration('temperature_color');
+      $temperature_color = str_replace('#', '', $temperature_color);
+      if ($temperature_color != '') {
+        $cmd = cmd::byId($temperature_color);
+        if ($cmd == null) {
+          log::add(PLUGIN_NAME, 'error', ' Mauvaise temperature_color :' . $temperature_color, __FILE__);
+          throw new Exception();
+        } else {
+          log::add(PLUGIN_NAME, 'debug', '  temperature_color: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']');
+          
+          // Recherche de la configuration
+          $minValue = $cmd->getConfiguration('minValue');
+          $maxValue = $cmd->getConfiguration('maxValue');
+          log::add(PLUGIN_NAME, 'debug', '  minValue: ' . $minValue);
+          log::add(PLUGIN_NAME, 'debug', '  maxValue: ' . $maxValue);
+
+          if (!isset($minValue)) {
+            log::add(PLUGIN_NAME, 'error', ' minValue non renseignée', __FILE__);
+            throw new Exception();
+          }
+          if (!isset($maxValue)) {
+            log::add(PLUGIN_NAME, 'error', ' maxValue non renseignée', __FILE__);
+            throw new Exception();
+          }
+
+          // Calcul de la température couleur gérable par l'équipement
+          if ($temp_color > $maxValue){
+            $temp_color = $maxValue;
+          }
+          if ($temp_color < $minValue) {
+            $temp_color = $minValue;
+          }
+          log::add(PLUGIN_NAME, 'debug', '  temp_color corrigé: ' . $temp_color);
+
+          $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
+        }
+      }
+    }
+    catch (Exception $ex) {
+
+    }
   }
 
   /*     * **********************Getteur Setteur*************************** */
 
+    //  /**
+    //  * Récupérer la configuration de l'équipement & validation 
+    //  * Récupération de la configuration du plugin
+    //  */
+    // private function getMyConfiguration(): ?stdClass
+    // {
+    //     $configuration = new stdClass();
+
+    //     // Paramètre équipement
+    //     $eqlogic = $this->getEqLogic(); //récupère l'éqlogic de la commande $this
+
+    //     //$isOK = false;
+    //     // Lecture et Analyse de la configuration        
+    //     //$sunElevation = $this->computeSunElevation();
+
+    //     return $configuration;
+    // }
+
+    /**
+     * Calculer la hauteur du soleil
+     * @return {float} Hauteur du soleil
+     */
+    private function computeSunElevation(): float {
+      $latitude =config::bykey('info::latitude');
+      $longitude = config::bykey('info::longitude');
+      $altitude = config::bykey('info::altitude');
+
+      log::add(PLUGIN_NAME, 'debug', ' latitude :' . $latitude, __FILE__);
+      log::add(PLUGIN_NAME, 'debug', ' longitude :' . $longitude, __FILE__);
+      log::add(PLUGIN_NAME, 'debug', ' altitude :' . $altitude, __FILE__);
+
+
+      if (!isset($latitude) || !isset($longitude)) {
+        log::add(PLUGIN_NAME, 'error', ' latitude ou longitude non renseigné', __FILE__);
+        throw new Exception();
+      }
+
+      $SD = new SolarData\SolarData();
+      $SD->setObserverPosition(config::byKey('info::latitude'), config::byKey('info::longitude'), config::byKey('info::altitude'));
+      $SD->setObserverDate(date('Y'), date('n'), date('j'));
+      $SD->setObserverTime(date('G'), date('i'),date('s'));
+      //ARGS : difference in seconds between the Earth rotation time and the Terrestrial Time (TT)/
+      $SD->setDeltaTime(67);
+      $SD->setObserverTimezone(date('Z') / 3600);
+      $SunPosition = $SD->calculate();
+      $sunElevation = floatval(round($SunPosition->e0°, 2));
+      log::add(PLUGIN_NAME, 'debug', ' sunElevation :' . $sunElevation, __FILE__);
+
+      if ($sunElevation < 0)
+      {
+        $sunElevation = 0;
+      }
+      if ($sunElevation > 90){
+        $sunElevation = 90;
+      }
+      log::add(PLUGIN_NAME, 'debug', ' sunElevation corrigé :' . $sunElevation, __FILE__);
+
+      return floatval($sunElevation);
+    }
 }
