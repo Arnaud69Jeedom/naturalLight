@@ -88,7 +88,7 @@ function addCmdToTable(_cmd) {
 
 $(".eqLogic").delegate(".listCmdInfo", 'click', function () {
   var el = $(this).closest('.form-group').find('.eqLogicAttr');
-  jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
+  jeedom.cmd.getSelectModal({cmd: {type: 'info',subType : 'binary'}}, function (result) {
     if (el.attr('data-concat') == 1) {
       el.atCaret('insert', result.human);
     } else {
@@ -99,7 +99,7 @@ $(".eqLogic").delegate(".listCmdInfo", 'click', function () {
 
 $("body").on('click',".listCmdAction", function () {
   var el = $(this).closest('.form-group').find('.eqLogicAttr');
-  jeedom.cmd.getSelectModal({cmd: {type: 'action'}}, function (result) {
+  jeedom.cmd.getSelectModal({cmd: {type: 'action',subType : 'slider'}}, function (result) {
     el.value(result.human);
   });
 });
