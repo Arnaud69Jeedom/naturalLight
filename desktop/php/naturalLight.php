@@ -148,34 +148,36 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<!-- Commande de la lumières -->
 				<form class="form-horizontal">
 					<fieldset>
-						<div class="form-group">
-							<label class="col-sm-4 control-label">{{Température couleur}}</label>
-							<div class="col-xs-11 col-sm-6">
-								<div class="input-group">
-									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="temperature_color" data-concat="0" />
-									<span class="input-group-btn">
-										<a class="btn btn-default listCmdAction">
-											<i class="fas fa-list-alt"></i>
-										</a>
-									</span>
+						<div class="col-lg-6">
+							<legend><i class="icon jeedom2-lightbulb25"></i> {{Lampes}}</legend>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Température couleur}}</label>
+								<div class="col-xs-11 col-sm-6">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="temperature_color" data-concat="0" />
+										<span class="input-group-btn">
+											<a class="btn btn-default listCmdAction">
+												<i class="fas fa-list-alt"></i>
+											</a>
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Lampe état}}</label>
+								<div class="col-xs-11 col-sm-6">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
+										<span class="input-group-btn">
+											<a class="btn btn-default listCmdInfo">
+												<i class="fas fa-list-alt"></i>
+											</a>
+										</span>
+									</div>
 								</div>
 							</div>
 						</div>
-
-						<div class="form-group">
-							<label class="col-sm-4 control-label">{{Lampe état}}</label>
-							<div class="col-xs-11 col-sm-6">
-								<div class="input-group">
-									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
-									<span class="input-group-btn">
-										<a class="btn btn-default listCmdInfo">
-											<i class="fas fa-list-alt"></i>
-										</a>
-									</span>
-								</div>
-							</div>
-                        </div>
-
 				     </fieldset>
 				</form>
 			</div><!-- /.tabpanel #lighttab-->

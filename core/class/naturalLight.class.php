@@ -281,7 +281,10 @@ class naturalLightCmd extends cmd {
 
           // Lumière éteinte : on ne fait rien
           if ($state == 1) {
+            log::add(PLUGIN_NAME, 'info', ' lampe allumée', __FILE__);
             $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
+          } else {
+            log::add(PLUGIN_NAME, 'info', ' lampe éteinte', __FILE__);
           }
         }
       }
