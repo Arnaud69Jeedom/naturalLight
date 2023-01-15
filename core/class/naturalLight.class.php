@@ -210,6 +210,10 @@ class naturalLightCmd extends cmd {
       // Calculer Sun elevation
       $sunElevation = $this->computeSunElevation();
 
+      // set Sun Elevation value
+      $cmdSunElevation = $eqlogic->getCmd(null, 'sun_elevation');
+      $cmdSunElevation->event($sunElevation);
+
       // Obtenir état de la lampe
       $state = 0;
       $lamp_state = $eqlogic->getConfiguration('lamp_state');
@@ -224,10 +228,9 @@ class naturalLightCmd extends cmd {
           log::add(PLUGIN_NAME, 'debug', '  lamp_state: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']:'.$state);
         }
       }
-
-      // Lumière éteinte : on ne fait rien
-      if ($state == 0) {
-        return;
+      else {
+        log::add(PLUGIN_NAME, 'error', ' lamp_state non renseigné', __FILE__);
+        throw new Exception();
       }
 
       // Calcul de la température couleur
@@ -267,10 +270,24 @@ class naturalLightCmd extends cmd {
           if ($temp_color < $minValue) {
             $temp_color = $minValue;
           }
-          log::add(PLUGIN_NAME, 'debug', '  temp_color corrigé: ' . $temp_color);
+          log::add(PLUGIN_NAME, 'info', 'température couleur: ' . $temp_color);
 
-          $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
+          // set temp_color value
+          $cmdTempColor = $eqlogic->getCmd(null, 'temperature_color');
+          $cmdTempColor->event($temp_color);
+          $cmdTempColor->setConfiguration('minValue', $minValue);
+          $cmdTempColor->setConfiguration('maxValue', $maxValue);
+          $cmdTempColor->save();
+
+          // Lumière éteinte : on ne fait rien
+          if ($state == 1) {
+            $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
+          }
         }
+      }
+      else {
+        log::add(PLUGIN_NAME, 'error', ' temperature_color non renseigné', __FILE__);
+        throw new Exception();
       }
     }
     catch (Exception $ex) {
