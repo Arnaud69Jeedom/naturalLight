@@ -1,4 +1,4 @@
-A faire :
+Liste des choses à faire :
 - Une icone,
 - Option pour débrayer l'automatisme :
     * Etat gestion (stateHandling): info, binary, 
