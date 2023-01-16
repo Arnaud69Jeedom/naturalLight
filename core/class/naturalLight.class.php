@@ -101,7 +101,7 @@ class naturalLight extends eqLogic {
     $lamp_state = str_replace('#', '', $lamp_state);
     $cmd = cmd::byId($lamp_state);
     if (!is_object($cmd)) {
-      throw new Exception();
+      throw new Exception("lamp_state non renseigné");
     }
 
     $listener = $this->getListener();
@@ -141,7 +141,7 @@ class naturalLight extends eqLogic {
   public function postSave() {
     log::add(PLUGIN_NAME, 'debug', 'postSave');
 
-    // windows_action
+    // sun_elevation
     $sunElevation = $this->getCmd(null, 'sun_elevation');
     if (!is_object($sunElevation)) {
         $sunElevation = new windowsCmd();
@@ -159,7 +159,7 @@ class naturalLight extends eqLogic {
     $sunElevation->save();
     unset($sunElevation);
 
-    // windows_action
+    // temperature_color
     $temperatureColor = $this->getCmd(null, 'temperature_color');
     if (!is_object($temperatureColor)) {
         $temperatureColor = new windowsCmd();
@@ -193,6 +193,11 @@ class naturalLight extends eqLogic {
     $refresh->setSubType('other');
     $refresh->save();
     unset($refresh);
+
+    $lamp_state = $this->getConfiguration('lamp_state');
+    if (empty($lamp_state)) {
+      return;
+    }
 
     $this->setListener();
   }
