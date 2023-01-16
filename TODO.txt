@@ -1,7 +1,5 @@
 Liste des choses à faire :
-- Une icone,
 - Option pour débrayer l'automatisme :
     * Etat gestion (stateHandling): info, binary, 
     * Suspendre (suspendHandling), Reprendre (resumeHandling): action, other
-- Listener pour gérer une ampoule qui s'allume
 - test avec plugin zigbee et deconz ?
