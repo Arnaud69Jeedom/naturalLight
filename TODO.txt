@@ -1,0 +1,5 @@
+Liste des choses à faire :
+- Option pour débrayer l'automatisme :
+    * Etat gestion (stateHandling): info, binary, 
+    * Suspendre (suspendHandling), Reprendre (resumeHandling): action, other
+- test avec plugin zigbee et deconz ?

@@ -1,13 +1,13 @@
 {
 	"id" : "naturalLight",
-	"name" : "naturalLight",
+	"name" : "Natural Light",
 	"description" : {
 		"fr_FR": "plugins naturalLight pour Jeedom"
 	},
 	"licence" : "AGPL",
-	"author" : "arnaud69",
+	"author" : "Arnaud_69",
 	"require" : "4.2.0",
-	"category" : "automation",
+	"category" : "automatisation",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
 	"maxDependancyInstallTime" : 0,

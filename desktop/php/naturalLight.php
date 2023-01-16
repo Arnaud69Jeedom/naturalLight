@@ -3,7 +3,7 @@ if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 // Déclaration des variables obligatoires
-$plugin = plugin::byId('template');
+$plugin = plugin::byId('naturalLight');
 sendVarToJS('eqType', $plugin->getId());
 $eqLogics = eqLogic::byType($plugin->getId());
 ?>
@@ -25,10 +25,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<span>{{Configuration}}</span>
 			</div>
 		</div>
-		<legend><i class="fas fa-table"></i> {{Mes templates}}</legend>
+		<legend><i class="fas fa-table"></i> {{Mes lumières}}</legend>
 		<?php
 		if (count($eqLogics) == 0) {
-			echo '<br><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement Template trouvé, cliquer sur "Ajouter" pour commencer}}</div>';
+			echo '<br><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement Natural Light trouvé, cliquer sur "Ajouter" pour commencer}}</div>';
 		} else {
 			// Champ de recherche
 			echo '<div class="input-group" style="margin:5px;">';
@@ -73,13 +73,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fas fa-arrow-circle-left"></i></a></li>
 			<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+			<li role="presentation"><a href="#lighttab" aria-controls="home" role="tab" data-toggle="tab"><i class="icon jeedom2-lightbulb25"></i> {{Lumières}}</a></li>
 			<li role="presentation"><a href="#commandtab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-list"></i> {{Commandes}}</a></li>
 		</ul>
 		<div class="tab-content">
 			<!-- Onglet de configuration de l'équipement -->
 			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
 				<!-- Partie gauche de l'onglet "Equipements" -->
-				<!-- Paramètres généraux et spécifiques de l'équipement -->
+				<!-- Paramètres généraux de l'équipement -->
 				<form class="form-horizontal">
 					<fieldset>
 						<div class="col-lg-6">
@@ -125,41 +126,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<label class="checkbox-inline"><input type="checkbox" class="eqLogicAttr" data-l1key="isVisible" checked>{{Visible}}</label>
 								</div>
 							</div>
-
-							<legend><i class="fas fa-cogs"></i> {{Paramètres spécifiques}}</legend>
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Nom du paramètre n°1}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Renseignez le paramètre n°1 de l'équipement}}"></i></sup>
-								</label>
-								<div class="col-sm-6">
-									<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="param1" placeholder="{{Paramètre n°1}}">
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="col-sm-4 control-label"> {{Mot de passe}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Renseignez le mot de passe}}"></i></sup>
-								</label>
-								<div class="col-sm-6">
-									<input type="text" class="eqLogicAttr form-control inputPassword" data-l1key="configuration" data-l2key="password">
-								</div>
-							</div>
-							<!-- Exemple de champ de saisie du cron d'auto-actualisation avec assistant -->
-							<!-- La fonction cron de la classe du plugin doit contenir le code prévu pour que ce champ soit fonctionnel -->
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Auto-actualisation}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Fréquence de rafraîchissement des commandes infos de l'équipement}}"></i></sup>
-								</label>
-								<div class="col-sm-6">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control roundedLeft" data-l1key="configuration" data-l2key="autorefresh" placeholder="{{Cliquer sur ? pour afficher l'assistant cron}}">
-										<span class="input-group-btn">
-											<a class="btn btn-default cursor jeeHelper roundedRight" data-helper="cron" title="Assistant cron">
-												<i class="fas fa-question-circle"></i>
-											</a>
-										</span>
-									</div>
-								</div>
-							</div>
 						</div>
 
 						<!-- Partie droite de l'onglet "Équipement" -->
@@ -177,9 +143,48 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				</form>
 			</div><!-- /.tabpanel #eqlogictab-->
 
+			<!-- Onglet de configuration de l'équipement -->
+			<div role="tabpanel" class="tab-pane" id="lighttab">
+				<!-- Commande de la lumières -->
+				<form class="form-horizontal">
+					<fieldset>
+						<div class="col-lg-6">
+							<legend><i class="icon jeedom2-lightbulb25"></i> {{Lampes}}</legend>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Température couleur}}</label>
+								<div class="col-xs-11 col-sm-6">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="temperature_color" data-concat="0" />
+										<span class="input-group-btn">
+											<a class="btn btn-default listCmdAction">
+												<i class="fas fa-list-alt"></i>
+											</a>
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Lampe état}}</label>
+								<div class="col-xs-11 col-sm-6">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
+										<span class="input-group-btn">
+											<a class="btn btn-default listCmdInfo">
+												<i class="fas fa-list-alt"></i>
+											</a>
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+				     </fieldset>
+				</form>
+			</div><!-- /.tabpanel #lighttab-->
+
 			<!-- Onglet des commandes de l'équipement -->
 			<div role="tabpanel" class="tab-pane" id="commandtab">
-				<a class="btn btn-default btn-sm pull-right cmdAction" data-action="add" style="margin-top:5px;"><i class="fas fa-plus-circle"></i> {{Ajouter une commande}}</a>
+				<!-- <a class="btn btn-default btn-sm pull-right cmdAction" data-action="add" style="margin-top:5px;"><i class="fas fa-plus-circle"></i> {{Ajouter une commande}}</a> -->
 				<br><br>
 				<div class="table-responsive">
 					<table id="table_cmd" class="table table-bordered table-condensed">

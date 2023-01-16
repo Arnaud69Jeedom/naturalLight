@@ -1,0 +1,58 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "1227b671d795edd7911ea51c561b84a6",
+    "packages": [
+        {
+            "name": "abbadon1334/sun-position-spa-php",
+            "version": "1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/abbadon1334/sun-position-spa-php.git",
+                "reference": "e76a5821755c8993854c197d03eecbbafeae7a09"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/abbadon1334/sun-position-spa-php/zipball/e76a5821755c8993854c197d03eecbbafeae7a09",
+                "reference": "e76a5821755c8993854c197d03eecbbafeae7a09",
+                "shasum": ""
+            },
+            "require-dev": {
+                "kint-php/kint": "2.2.0",
+                "phpunit/phpunit": "3.7.14"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SolarData\\": "src/",
+                    "SolarData\\Tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Francesco Danti",
+                    "email": "fdanti@gmail.com"
+                }
+            ],
+            "description": "solar data calculation and sun position",
+            "support": {
+                "issues": "https://github.com/abbadon1334/sun-position-spa-php/issues",
+                "source": "https://github.com/abbadon1334/sun-position-spa-php/tree/1.1"
+            },
+            "time": "2019-07-08T07:18:08+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": [],
+    "plugin-api-version": "2.3.0"
+}
