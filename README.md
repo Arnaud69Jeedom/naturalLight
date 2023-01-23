@@ -20,7 +20,7 @@ Le plugin s'adapte à l'emplacement de Jeedom.
 Il faut donc vérifier que cela est correctement renseigné
 Dans le menu Réglages/Système/Configuration, puis dans l'onglet Général, voir la section Coordonnées
 
-![Configuration Plugin](../images/Param_Coordonnées.png)
+![Configuration Plugin](docs/images/Param_Coordonnées.png)
 
 ## Onglet Equipement
 
