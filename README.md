@@ -1,11 +1,51 @@
-# Plugin Natural Light pour Jeedom
+# Plugin Natural Light
 
-Ce plugin sert à la gestion de natural Light pour **Jeedom**.
+Plugin permettant de gérer la notion de naturalLight pour **Jeedom**.
 
-La documentation générale relative à la conception de plugin est consultable [ici](https://doc.jeedom.com/fr_FR/dev/). Dans le détail :   
-* [Utilisation du template de plugin](https://doc.jeedom.com/fr_FR/dev/plugin_template) : Le template de plugin est une base de plugin pour Jeedom qui doit être adaptée avec l'id de votre plugin et à laquelle il suffit d'ajouter vos propres fonctions. 
-* [Fichier info.json](https://doc.jeedom.com/fr_FR/dev/structure_info_json) : Intégré depuis la version 3.0 de Jeedom, le fichier **info.json** est obligatoire pour le bon fonctionnement des plugins et leur bon déploiement sur le Market Jeedom.
-* [Icône du plugin](https://doc.jeedom.com/fr_FR/dev/Icone_de_plugin) : Afin de pouvoir être publié sur le Market Jeedom, tout plugin doit disposer d’une icône. Attention à ne pas utiliser le même code couleur que les icônes des plugins Jeedom officiels.
-* [Widget du plugin](https://doc.jeedom.com/fr_FR/dev/widget_plugin) : Présentation des différentes manières d'inclure des widgets personnalisés au plugin.
-* [Documentation du plugin](https://doc.jeedom.com/fr_FR/dev/documentation_plugin) : Présentation de la mise en place d'une documentation car un bon plugin n'est rien sans documentation adéquate.
-* [Publication du plugin](https://doc.jeedom.com/fr_FR/dev/publication_plugin) : Description des pré-requis indispensables à la publication du plugin.
+# Introduction 
+
+La luminosité naturelle évolue en fonction de l'heure de la journée.
+Elle est de couleur chaude au matin (jaune), puis devient de plus en plus froide (blanche) vers le milieu de la journée, puis décline en fin de journée pour redevenir une couleur chaude.
+Pour respecter le cycle circadien et favoriser le sommeil, il est intéressant de moduler aussi l'éclairage de nos maisons pour coller au plus prêt à ce changement.
+A noter : la lumière froide de nos lampes LED peut perturber le sommeil.
+
+
+# Configuration du plugin
+
+La configuration est simple.
+
+## Emplacement
+
+Le plugin s'adapte à l'emplacement de Jeedom.
+Il faut donc vérifier que cela est correctement renseigné
+Dans le menu Réglages/Système/Configuration, puis dans l'onglet Général, voir la section Coordonnées
+
+![Configuration Plugin](../images/Param_Coordonnées.png)
+
+## Onglet Equipement
+
+Lors de la création de l'équipement, l'onglet Equipement est standard.
+Renseigner le nom, l'objet parent et les options souhaités.
+cocher "Activer".
+Il n'est pas nécessaire de cocher "Visible", les informations affichées seront plus utiliser pour du debug (Sun Elevation, Temperature Color - voir la section Commandes)
+
+![Configuration Plugin](docs/images/Param_Coordonn%C3%A9es.png)
+
+## Onglet Lumières
+
+Cet onglet permet de sélectionner la lampe qu'on souhaite gérer.
+Il faut alors renseigner 2 informations :
+- Température couleur : la commande de la lampe permettant de modifier la température couleur,
+- Lampe état : la commandede la lampe  permettant de savoir si la lampe est allumer ou éteinte.
+
+![Configuration Plugin](docs/images/Equipement_Lumi%C3%A8res.png)
+
+## Onglet Commandes
+
+L'onglet Commandes permet de voir les commandes créées :
+- Rafraichir : permet de forcer le calcul de la couleur à appliquer.
+- Sun Elevation : Indique l'élévation du soleil.
+- Temperature color : Température couleur à appliquer.
+
+![Configuration Plugin](docs/images/Equipement_Commandes.png)
+
