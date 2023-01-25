@@ -38,6 +38,8 @@ Il faut alors renseigner 2 informations :
 - Température couleur : la commande de la lampe permettant de modifier la température couleur,
 - Lampe état : la commandede la lampe  permettant de savoir si la lampe est allumer ou éteinte.
 
+NOTE : le type générique pour la commande "Température couleur" est vérifié et doit être à 'LIGHT_SET_COLOR_TEMP'
+
 ![Configuration Plugin](../images/Equipement_Lumi%C3%A8res.png)
 
 ## Onglet Commandes

@@ -265,7 +265,7 @@ class naturalLight extends eqLogic {
         $cmd = cmd::byId($lamp_state);
         if ($cmd == null) {
           log::add(PLUGIN_NAME, 'error', ' Mauvaise lamp_state :' . $lamp_state);
-          throw new Exception();
+          throw new Exception('Mauvaise lamp_state');
         } else {
           $state = $cmd->execCmd();
           log::add(PLUGIN_NAME, 'debug', '  lamp_state: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']:'.$state);
@@ -273,12 +273,12 @@ class naturalLight extends eqLogic {
       }
       else {
         log::add(PLUGIN_NAME, 'error', ' lamp_state non renseigné');
-        throw new Exception();
+        throw new Exception('lamp_state non renseigné');
       }
 
       // Calcul de la température couleur
       $temp_color = intval(1000000/(4791.67 - 3290.66/(1 + 0.222 * $sunElevation * 0.81)));
-      log::add(PLUGIN_NAME, 'debug', '  temp_color: ' . $temp_color);
+      log::add(PLUGIN_NAME, 'debug', '  temp_color calculé: ' . $temp_color);
 
       // Obtenir la commande Temperature Couleur
       $temperature_color = $eqlogic->getConfiguration('temperature_color');
@@ -287,10 +287,18 @@ class naturalLight extends eqLogic {
         $cmd = cmd::byId($temperature_color);
         if ($cmd == null) {
           log::add(PLUGIN_NAME, 'error', ' Mauvaise temperature_color :' . $temperature_color);
-          throw new Exception();
+          throw new Exception('Mauvaise temperature_color');
         } else {
           log::add(PLUGIN_NAME, 'debug', '  temperature_color: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']');
           
+          // Vérification du type generique
+          $genericType = $cmd->getGeneric_type();
+          log::add(PLUGIN_NAME, 'debug', '  getGenericType: ' . $genericType);
+          if ($genericType != 'LIGHT_SET_COLOR_TEMP') {
+            log::add(PLUGIN_NAME, 'error', ' Mauvaise commande pour la lampe : temperature_color');
+          throw new Exception('Mauvaise commande pour la lampe : temperature_color');
+          }
+
           // Recherche de la configuration
           $minValue = $cmd->getConfiguration('minValue');
           $maxValue = $cmd->getConfiguration('maxValue');
@@ -299,11 +307,11 @@ class naturalLight extends eqLogic {
 
           if (empty($minValue)) {
             log::add(PLUGIN_NAME, 'error', ' minValue non renseignée');
-            throw new Exception();
+            throw new Exception('minValue non renseignée');
           }
           if (empty($maxValue)) {
             log::add(PLUGIN_NAME, 'error', ' maxValue non renseignée');
-            throw new Exception();
+            throw new Exception('maxValue non renseignée');
           }
 
           // Calcul de la température couleur gérable par l'équipement
@@ -333,11 +341,10 @@ class naturalLight extends eqLogic {
       }
       else {
         log::add(PLUGIN_NAME, 'error', ' temperature_color non renseigné');
-        throw new Exception();
+        throw new Exception('temperature_color non renseigné');
       }
     }
-    catch (Exception $ex) {
-
+    catch (Exception $ex) {      
     }
   }
 
