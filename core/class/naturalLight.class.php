@@ -144,7 +144,7 @@ class naturalLight extends eqLogic {
     // sun_elevation
     $sunElevation = $this->getCmd(null, 'sun_elevation');
     if (!is_object($sunElevation)) {
-        $sunElevation = new windowsCmd();
+        $sunElevation = new naturalLightCmd();
         $sunElevation->setLogicalId('sun_elevation');
         $sunElevation->setName(__('Sun Elevation', __FILE__));
         $sunElevation->setIsVisible(1);
@@ -162,7 +162,7 @@ class naturalLight extends eqLogic {
     // temperature_color
     $temperatureColor = $this->getCmd(null, 'temperature_color');
     if (!is_object($temperatureColor)) {
-        $temperatureColor = new windowsCmd();
+        $temperatureColor = new naturalLightCmd();
         $temperatureColor->setLogicalId('temperature_color');
         $temperatureColor->setName(__('Temperature color', __FILE__));
         $temperatureColor->setIsVisible(1);
@@ -182,7 +182,7 @@ class naturalLight extends eqLogic {
     // refresh
     $refresh = $this->getCmd(null, 'refresh');
     if (!is_object($refresh)) {
-        $refresh = new windowsCmd();
+        $refresh = new naturalLightCmd();
         $refresh->setLogicalId('refresh');
         $refresh->setIsVisible(1);
         $refresh->setName(__('Rafraichir', __FILE__));
