@@ -275,7 +275,7 @@ class naturalLight extends eqLogic {
       }
 
       // Calcul de la température couleur
-      $temp_color = intval(1000000/(4791.67 - 3290.66/(1 + 0.222 * $sunElevation * 0.81)));
+      $temp_color = intval(1000000/(4791.67 - 3290.66/(1 + 0.222 * $sunElevation ** 0.81)));
       log::add(__CLASS__, 'debug', '  temp_color calculé: ' . $temp_color);
 
       // Obtenir la commande Temperature Couleur
