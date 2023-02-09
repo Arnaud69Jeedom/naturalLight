@@ -39,8 +39,8 @@ class naturalLight extends eqLogic {
   /*
   * Fonction exécutée automatiquement toutes les 15 minutes par Jeedom
   */
-  public static function cron15() {
-    log::add(__CLASS__, 'debug', '*** cron ***');
+  public static function cron5() {
+    log::add(__CLASS__, 'debug', '*** cron5 ***');
 
     foreach (eqLogic::byType(__CLASS__, true) as $light) {
       if ($light->getIsEnable() == 1) {
