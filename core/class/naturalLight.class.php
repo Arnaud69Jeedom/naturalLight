@@ -251,6 +251,8 @@ class naturalLight extends eqLogic {
       // Calculer Sun elevation
       $sunElevation = $this->computeSunElevation();
 
+      $tmp = $this->computeDay();
+
       // set Sun Elevation value
       $cmdSunElevation = $eqlogic->getCmd(null, 'sun_elevation');
       $cmdSunElevation->event($sunElevation);
@@ -275,8 +277,20 @@ class naturalLight extends eqLogic {
       }
 
       // Calcul de la température couleur
+      // Assez rouge en hiver car soleil par très haut
+      // https://keisan.casio.com/exec/system/1224682331
       $temp_color = intval(1000000/(4791.67 - 3290.66/(1 + 0.222 * $sunElevation ** 0.81)));
-      log::add(__CLASS__, 'debug', '  temp_color calculé: ' . $temp_color);
+      log::add(__CLASS__, 'debug', '  temp_color calculé SunPosition: ' . $temp_color);
+
+      // Recherche d'une fonction à partir de valeur souhaitée:
+      // https://www.dcode.fr/recherche-equation-fonction      
+      $hour = date('H', time()) + date('i', time())/60;
+      //log::add(__CLASS__, 'debug', '  hour: ' . $hour);
+      $coef1 = 3.39426;
+      $coef2 = -95.0704;
+      $coef3 = 785.362;
+      $temp_color = intval(  ($coef1 * ($hour**2)) + ($coef2 * $hour) + $coef3);
+      log::add(__CLASS__, 'debug', '  temp_color calculé Hour: ' . $temp_color);  
 
       // Obtenir la commande Temperature Couleur
       $temperature_color = $eqlogic->getConfiguration('temperature_color');
@@ -346,7 +360,43 @@ class naturalLight extends eqLogic {
     }
   }
 
-    /**
+  /**
+   * Calculer période de la journée
+   */
+  private function computeDay(): float {
+    $latitude =config::bykey('info::latitude');
+    $longitude = config::bykey('info::longitude');
+    $altitude = config::bykey('info::altitude');
+
+    log::add(__CLASS__, 'debug', ' latitude :' . $latitude);
+    log::add(__CLASS__, 'debug', ' longitude :' . $longitude);
+    log::add(__CLASS__, 'debug', ' altitude :' . $altitude);
+
+
+    if (!isset($latitude) || !isset($longitude)) {
+      log::add(__CLASS__, 'error', ' latitude ou longitude non renseigné');
+      throw new Exception();
+    }
+    
+    $dateSunInfo = date_sun_info(time(), $latitude, $longitude);
+    log::add(__CLASS__, 'debug', ' sunInfo'.json_encode($dateSunInfo));
+
+    //"sunrise":1675925555,"sunset":1675961867
+    // $durationDay = $dateSunInfo['sunset'] - $dateSunInfo['sunrise'];
+    // $durationMidDayPM = $dateSunInfo['sunset'] - $dateSunInfo['transit'];
+    $position = 0;
+    if (time() < $dateSunInfo['transit']) {
+      $position = (time()-$dateSunInfo['sunrise']) / ($dateSunInfo['transit'] - $dateSunInfo['sunrise']) * 100;
+    } else {
+      $position = (time() - $dateSunInfo['transit']) / ($dateSunInfo['sunset'] - $dateSunInfo['transit']) * 100;
+    }
+    log::add(__CLASS__, 'debug', ' position: '.round($position, 2).'%');
+
+
+    return 0;
+  } 
+
+   /**
    * Calculer la hauteur du soleil
    * @return {float} Hauteur du soleil
    */
@@ -366,15 +416,33 @@ class naturalLight extends eqLogic {
     }
 
     $SD = new SolarData\SolarData();
-    $SD->setObserverPosition(config::byKey('info::latitude'), config::byKey('info::longitude'), config::byKey('info::altitude'));
+    $SD->setObserverPosition($latitude, $longitude, $altitude);
     $SD->setObserverDate(date('Y'), date('n'), date('j'));
     $SD->setObserverTime(date('G'), date('i'),date('s'));
     //ARGS : difference in seconds between the Earth rotation time and the Terrestrial Time (TT)/
     $SD->setDeltaTime(67);
     $SD->setObserverTimezone(date('Z') / 3600);
+
+    /* ARGS : Observer mean pressure in Millibar */
+    $SD->setObserverAtmosphericPressure(820);
+
+    /* ARGS : Observer mean temperature in Celsius */
+    $SD->setObserverAtmosphericTemperature(11.0);
+
     $SunPosition = $SD->calculate();
     $sunElevation = floatval(round($SunPosition->e0°, 2));
     log::add(__CLASS__, 'debug', ' sunElevation :' . $sunElevation);
+    
+    // Elevation maximum
+    $dateSunInfo = date_sun_info(time(), $latitude, $longitude)['transit'];
+    log::add(__CLASS__, 'debug', ' maxi:'.date('H', $dateSunInfo).'H'.date('i', $dateSunInfo));
+    $SD->setObserverTime(date('H', $dateSunInfo), date('i', $dateSunInfo), 00);
+    $SunPositionMaxi = $SD->calculate();
+    $sunElevationMaxi = floatval(round($SunPositionMaxi->e0°, 2));
+    log::add(__CLASS__, 'debug', ' sunElevation midi :' . $sunElevationMaxi);
+
+    // Adaptation SunElevation avec maxi à 12h
+    $sunElevation = round($sunElevation * 90 / $sunElevationMaxi, 2);
 
     if ($sunElevation < 0)
     {
