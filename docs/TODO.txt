@@ -1,0 +1,12 @@
+TODO :
+* Prendre min/max uniquement à la création
+L'utilisateur pourra le personnaliser.
+Prévoir vérification de la valeur tout de même à l'éxécution ?
+
+* Prendre l'unité (mired ou %) de l'équipement d'origine
+
+* Condition perso pour ne pas modifier la couleur d'une ampoule
+exemple : la personne souhaite du vert, pas passer en blanc en auto
+
+* Cron global pour calcul commun puis parcours des équipements
+(voir code proposé)
