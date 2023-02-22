@@ -152,7 +152,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							<legend><i class="icon jeedom2-lightbulb25"></i> {{Lampes}}</legend>
 							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Température couleur}}</label>
-								<div class="col-xs-11 col-sm-6">
+								<div class="col-xs-11 col-sm-8">
 									<div class="input-group">
 										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="temperature_color" data-concat="0" />
 										<span class="input-group-btn">
@@ -166,7 +166,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Lampe état}}</label>
-								<div class="col-xs-11 col-sm-6">
+								<div class="col-xs-11 col-sm-8">
 									<div class="input-group">
 										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
 										<span class="input-group-btn">
@@ -198,6 +198,21 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<input type="number" disabled class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="maxValueDefault">
 								</div>
 							</div>
+
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Condition}}</label>
+								<div class="col-xs-11 col-sm-8">
+									<div class="input-group">
+										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="condition" data-concat="1" />
+										<span class="input-group-btn">
+											<a class="btn btn-default listCmdInfo">
+												<i class="fas fa-list-alt"></i>
+											</a>
+										</span>
+									</div>
+								</div>
+							</div>
+
 
 						</div>
 					</fieldset>

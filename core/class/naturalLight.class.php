@@ -301,12 +301,29 @@ class naturalLight extends eqLogic
       // set temp_color value
       $cmdTempColor->event($temp_color);
 
+      // Gestion de la condition
+      $condition = $this->getConfiguration('condition');
+      log::add(__CLASS__, 'debug', '  condition : '.$condition);
+      $conditionResult = true;
+      if ($condition != '')  {
+          // Evaluation
+          $conditionResult = jeedom::evaluateExpression($condition);
+          log::add(__CLASS__, 'debug', '  condition result : '.($conditionResult ? "true" : "false"));
+      }
+      else {
+        log::add(__CLASS__, 'info', ' pas de condition');
+      }
+      if (!$conditionResult) {
+        log::add(__CLASS__, 'info', '  condition indique arrêt');
+        return;
+      }
+
       // Lumière éteinte : on ne fait rien
       if ($state == 1) {
-        log::add(__CLASS__, 'info', ' lampe allumée');
+        log::add(__CLASS__, 'info', '  lampe allumée');
         $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
       } else {
-        log::add(__CLASS__, 'info', ' lampe éteinte');
+        log::add(__CLASS__, 'info', '  lampe éteinte');
       }
     } catch (Exception $ex) {
       log::add(__CLASS__, 'error', ' erreur: ' . $ex->getMessage());
