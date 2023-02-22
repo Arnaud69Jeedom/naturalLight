@@ -63,7 +63,11 @@ class naturalLight extends eqLogic {
     $eqLogic = self::byId($_option['id']);
     if (is_object($eqLogic) && $eqLogic->getIsEnable() == 1) {
       log::add(__CLASS__, 'info', 'pullRefresh action sur : '.$eqLogic->getHumanName());
-      $eqLogic->computeLamp();
+
+      $lamp_state = $eqLogic->getLampState();
+      if ($lamp_state === 1) {
+        $eqLogic->computeLamp();
+      }
     }
   }
 
@@ -310,25 +314,40 @@ class naturalLight extends eqLogic {
   
   public function computeLamp() {
     try {
+      // Optimisation : Voir s'il faut calculer la couleur et l'élévation
+      $cmdSunElevation = $this->getCmd(null, 'sun_elevation');
+      // Récupérer la commande de la lampe
+      $cmdTempColor = $this->getCmd(null, 'temperature_color');
+      $state = $this->getLampState();
+
+      // log::add(__CLASS__, 'debug', '  Sun Historized :'.$cmdSunElevation->getIsHistorized());
+      // log::add(__CLASS__, 'debug', '  Lampe Historized :'.$cmdTempColor->getIsHistorized());
+      // log::add(__CLASS__, 'debug', '  Etat lampe :'.$state);
+
+      if ($state === 0 && !$cmdSunElevation->getIsHistorized() && !$cmdTempColor->getIsHistorized()) {
+        // Aucun interêt de faire des calculs
+        return;
+      }
+
       // Calculer Sun elevation
       $sunElevation = $this->computeSunElevation();
       // set Sun Elevation value
-      $cmdSunElevation = $this->getCmd(null, 'sun_elevation');
       $cmdSunElevation->event($sunElevation);
+
+      if ($state === 0 && !$cmdTempColor->getIsHistorized()) {
+        // Aucun interêt de faire des calculs
+        return;
+      } 
 
       // Test sur la position de l'heure sur la durée du jour
       //$tmp = $this->computeDay();
 
-      $state = $this->getLampState();
-
       // Test : calcul sur SunElevation
       $temp_color = $this->computeTempColorBySunElevation($sunElevation);
 
-      // Test : calcul sur forule personnelle
+      // Test : calcul sur formule personnelle
       //$temp_color = $this->computeTempColorByFormula();
 
-      // Récupérer la commande de la lampe
-      $cmd = $this->getLampCommand();
 
       // TEST
       // Mise à jour sous info
@@ -353,6 +372,7 @@ class naturalLight extends eqLogic {
       // }
 
       // Recherche de la configuration
+      $cmd = $this->getLampCommand();
       $minValue = $cmd->getConfiguration('minValue');
       $maxValue = $cmd->getConfiguration('maxValue');
       log::add(__CLASS__, 'info', '  minValue: ' . $minValue);
@@ -376,9 +396,9 @@ class naturalLight extends eqLogic {
       }
       log::add(__CLASS__, 'info', 'température couleur: ' . $temp_color);
 
-      // // set temp_color value
-      // $cmdTempColor = $this->getCmd(null, 'temperature_color');
-      // $cmdTempColor->event($temp_color);
+      // set temp_color value
+      $cmdTempColor->event($temp_color);
+
       // $cmdTempColor->setConfiguration('minValue', $minValue);
       // $cmdTempColor->setConfiguration('maxValue', $maxValue);
       // $cmdTempColor->save();
@@ -515,9 +535,9 @@ class naturalLight extends eqLogic {
   }
 
   /**
-   * Obtenir l'état de la lampe (allumée ou non)
+   * Obtenir l'état de la lampe (allumée 1 ou éteint 0)
    */
-  private function getLampState() : bool {
+  private function getLampState() : int {
     // Obtenir état de la lampe
     $state = 0;
     $lamp_state = $this->getConfiguration('lamp_state');
@@ -528,7 +548,7 @@ class naturalLight extends eqLogic {
         log::add(__CLASS__, 'error', ' Mauvaise lamp_state :' . $lamp_state);
         throw new Exception('Mauvaise lamp_state');
       } else {
-        $state = $cmd->execCmd();
+        $state = boolval($cmd->execCmd()) ? 1 : 0;
         log::add(__CLASS__, 'debug', '  lamp_state: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']:'.$state);
       }
     }
