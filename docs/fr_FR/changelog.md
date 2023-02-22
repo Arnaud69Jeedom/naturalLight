@@ -6,7 +6,11 @@
 
 # 22/02/2023
 
+- Paramétrage propose une valeur min et max de la température couleur
+  Les valeurs par défaut sont récupérées du paramétrage de la lampe
+  La mise à jour est effectuée lors de l'enregistrement de l'équipement
 - Optimisation du calcul : Eviter si non nécessaire (lampe éteinte et pas d'historisation)
+- Nettoyage du code
 
 # 21/02/2023
 
