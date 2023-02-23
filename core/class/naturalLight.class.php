@@ -262,32 +262,63 @@ class naturalLight extends eqLogic
       // Test : calcul sur SunElevation
       $temp_color = $this->computeTempColorBySunElevation($sunElevation);
 
-      $cmd = $this->getLampCommand();
+      // Plugin Ikea ------------------------
+      if ($this->getConfiguration('minValueDefault') == 0 &&
+          $this->getConfiguration('maxValueDefault') == 100) {
+            log::add(__CLASS__, 'debug', '  gestion en pourcentage');
 
+          // plugin gérant la notion de pourcentage
+          // ampoule Ikea : min=153 mired, max: 370 mired
+          $maxi = 370;
+          $mini = 153;
+
+          $temp_color = 100 - intval(100 * ($maxi - $temp_color) / ($maxi - $mini));
+          // Correction selon borne
+          if ($temp_color < 0) $temp_color = 0;
+          if ($temp_color > 100) $temp_color = 100;
+
+          log::add(__CLASS__, 'debug', '  temp_color corrigé :' . $temp_color . '%');
+      }
+      // -------------------------
+
+      // Plugin inconnu en Kelvin
+      if ($this->getConfiguration('minValueDefault') > 500 &&
+          $this->getConfiguration('maxValueDefault') > 500) {
+          log::add(__CLASS__, 'debug', '  gestion en Kelvin');
+
+          $temp_color = 1000000 / $temp_color;
+          log::add(__CLASS__, 'debug', '  temp_color corrigé :' . $temp_color.'K');
+
+      }
+      // -------------------------
+
+      $cmd = $this->getLampCommand();
+      
       // Recherche de la configuration
       $minValue = $this->getConfiguration('minValue');
       if (!isset($minValue)) {
         // Ancien équipement sans valeur minValue
-        log::add(__CLASS__, 'debug', ' minValue pris de la lampe');
+        log::add(__CLASS__, 'debug', '  minValue pris de la lampe');
         $minValue = $cmd->getConfiguration('minValue');
       }
       $maxValue = $this->getConfiguration('maxValue');
       if (!isset($maxValue)) {
         // Ancien équipement sans valeur maxValue
-        log::add(__CLASS__, 'debug', ' maxValue pris de la lampe');
+        log::add(__CLASS__, 'debug', '  maxValue pris de la lampe');
         $maxValue = $cmd->getConfiguration('maxValue');
       }
-      log::add(__CLASS__, 'info', '  minValue: ' . $minValue);
-      log::add(__CLASS__, 'info', '  maxValue: ' . $maxValue);
-
+      log::add(__CLASS__, 'debug', '  minValue: ' . $minValue);
+      log::add(__CLASS__, 'debug', '  maxValue: ' . $maxValue);
+      
       if (!isset($minValue)) {
-        log::add(__CLASS__, 'error', ' minValue non renseignée');
+        log::add(__CLASS__, 'error', '  minValue non renseignée');
         throw new Exception('minValue non renseignée');
       }
       if (!isset($maxValue)) {
-        log::add(__CLASS__, 'error', ' maxValue non renseignée');
+        log::add(__CLASS__, 'error', '  maxValue non renseignée');
         throw new Exception('maxValue non renseignée');
       }
+      // -------------------------
 
       // Calcul de la température couleur gérable par l'équipement
       if ($temp_color > $maxValue) {
@@ -311,19 +342,19 @@ class naturalLight extends eqLogic
           log::add(__CLASS__, 'debug', '  condition result : '.($conditionResult ? "true" : "false"));
       }
       else {
-        log::add(__CLASS__, 'info', ' pas de condition');
+        log::add(__CLASS__, 'info', 'pas de condition');
       }
       if (!$conditionResult) {
-        log::add(__CLASS__, 'info', '  condition indique arrêt');
+        log::add(__CLASS__, 'info', 'condition indique arrêt');
         return;
       }
 
       // Lumière éteinte : on ne fait rien
       if ($state == 1) {
-        log::add(__CLASS__, 'info', '  lampe allumée');
+        log::add(__CLASS__, 'info', 'lampe allumée');
         $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
       } else {
-        log::add(__CLASS__, 'info', '  lampe éteinte');
+        log::add(__CLASS__, 'info', 'lampe éteinte');
       }
     } catch (Exception $ex) {
       log::add(__CLASS__, 'error', ' erreur: ' . $ex->getMessage());
@@ -365,14 +396,6 @@ class naturalLight extends eqLogic
     $sunElevation = floatval(round($SunPosition->e0°, 2));
     log::add(__CLASS__, 'debug', ' sunElevation :' . $sunElevation);
 
-    if ($sunElevation < 0) {
-      $sunElevation = 0;
-    }
-    if ($sunElevation > 90) {
-      $sunElevation = 90;
-    }
-    log::add(__CLASS__, 'debug', ' sunElevation corrigé :' . $sunElevation);
-
     return floatval($sunElevation);
   }
 
@@ -386,9 +409,17 @@ class naturalLight extends eqLogic
   private function computeTempColorBySunElevation($sunElevation): int
   {
     // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__ . ' (test)');
+    $correctedSunElevation = $sunElevation;
+    if ($correctedSunElevation < 0) {
+      $correctedSunElevation = 0;
+    }
+    if ($correctedSunElevation > 90) {
+      $correctedSunElevation = 90;
+    }
+    // log::add(__CLASS__, 'debug', ' sunElevation corrigé :' . $correctedSunElevation);
 
     // Calcul de la température couleur
-    $temp_color = intval(1000000 / (4791.67 - 3290.66 / (1 + 0.222 * $sunElevation ** 0.81)));
+    $temp_color = intval(1000000 / (4791.67 - 3290.66 / (1 + 0.222 * $correctedSunElevation ** 0.81)));
     log::add(__CLASS__, 'debug', '  temp_color calculé SunPosition: ' . $temp_color);
 
     return $temp_color;
@@ -411,7 +442,7 @@ class naturalLight extends eqLogic
         log::add(__CLASS__, 'error', '  Mauvaise temperature_color :' . $temperature_color);
         throw new Exception('Mauvaise temperature_color');
       } else {
-        log::add(__CLASS__, 'info', '  lampe: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']');
+        log::add(__CLASS__, 'info', 'lampe: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']');
 
         // Vérification du type generique
         $genericType = $cmd->getGeneric_type();

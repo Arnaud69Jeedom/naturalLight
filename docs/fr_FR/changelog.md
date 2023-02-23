@@ -4,6 +4,14 @@
 >
 >S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 23/02/2023
+
+- Tooltip pour la Condition de fonctionnement
+- Gestion du plugin ikea avec :
+    Température chaude = 100
+    Température froide = 0
+- Gestion d'un plugin potentiel en Kelvin
+
 # 22/02/2023
 
 - Paramétrage de valeurs min et max de la température couleur

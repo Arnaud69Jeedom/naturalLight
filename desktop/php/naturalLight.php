@@ -200,7 +200,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							</div>
 
 							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Condition}}</label>
+								<label class="col-sm-4 control-label">{{Condition de lancement}}
+								<sup><i class="fas fa-question-circle tooltips" title="{{Condition à remplir pour que la gestion automatique s'active (vide par défaut = toujours active)}}"></i></sup>
+								</label>
 								<div class="col-xs-11 col-sm-8">
 									<div class="input-group">
 										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="condition" data-concat="1" />
