@@ -19,28 +19,18 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 require_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
-class naturalLight extends eqLogic {
+class naturalLight extends eqLogic
+{
   /*     * *************************Attributs****************************** */
-
-  /*
-  * Permet de définir les possibilités de personnalisation du widget (en cas d'utilisation de la fonction 'toHtml' par exemple)
-  * Tableau multidimensionnel - exemple: array('custom' => true, 'custom::layout' => false)
-  public static $_widgetPossibility = array();
-  */
-
-  /*
-  * Permet de crypter/décrypter automatiquement des champs de configuration du plugin
-  * Exemple : "param1" & "param2" seront cryptés mais pas "param3"
-  public static $_encryptConfigKey = array('param1', 'param2');
-  */
 
   /*     * ***********************Methode static*************************** */
 
   /*
   * Fonction exécutée automatiquement toutes les 15 minutes par Jeedom
   */
-  public static function cron15() {
-    log::add(__CLASS__, 'debug', '*** cron ***');
+  public static function cron()
+  {
+    log::add(__CLASS__, 'debug', '*** ' . __FUNCTION__ . ' ***');
 
     foreach (eqLogic::byType(__CLASS__, true) as $light) {
       if ($light->getIsEnable() == 1) {
@@ -56,43 +46,50 @@ class naturalLight extends eqLogic {
   /**
    * Fonction appelé par Listener
    */
-  public static function pullRefresh($_option) {
-    log::add(__CLASS__, 'debug', 'pullRefresh started');
+  public static function pullRefresh($_option)
+  {
+    log::add(__CLASS__, 'debug', '*** ' . __FUNCTION__ . ' ***');
 
-    /** @var designImgSwitch */
     $eqLogic = self::byId($_option['id']);
     if (is_object($eqLogic) && $eqLogic->getIsEnable() == 1) {
-      log::add(__CLASS__, 'debug', 'pullRefresh action sur : '.$eqLogic->getHumanName());
-      $eqLogic->computeLamp();
+      log::add(__CLASS__, 'info', 'pullRefresh action sur : ' . $eqLogic->getHumanName());
+
+      $lamp_state = $eqLogic->getLampState();
+      if ($lamp_state === 1) {
+        $eqLogic->computeLamp();
+      }
     }
   }
 
   /*     * *********************Méthodes d'instance************************* */
 
-    /**
-     * @return listener
-     */
-    private function getListener() {
-      log::add(__CLASS__, 'debug', 'getListener');
+  /**
+   * @return listener
+   */
+  private function getListener()
+  {
+    log::add(__CLASS__, 'debug', 'getListener');
 
-      return listener::byClassAndFunction(__CLASS__, 'pullRefresh', array('id' => $this->getId()));
+    return listener::byClassAndFunction(__CLASS__, 'pullRefresh', array('id' => $this->getId()));
   }
 
-  private function removeListener() {
+  private function removeListener()
+  {
     log::add(__CLASS__, 'debug', 'remove Listener');
 
-      $listener = $this->getListener();
-      if (is_object($listener)) {
-          $listener->remove();
-      }
+    $listener = $this->getListener();
+    if (is_object($listener)) {
+      $listener->remove();
+    }
   }
 
-  private function setListener() {
+  private function setListener()
+  {
     log::add(__CLASS__, 'debug', 'setListener');
 
     if ($this->getIsEnable() == 0) {
-        $this->removeListener();
-        return;
+      $this->removeListener();
+      return;
     }
 
     $lamp_state = $this->getConfiguration('lamp_state');
@@ -104,50 +101,45 @@ class naturalLight extends eqLogic {
 
     $listener = $this->getListener();
     if (!is_object($listener)) {
-        $listener = new listener();
-        $listener->setClass(__CLASS__);
-        $listener->setFunction('pullRefresh');
-        $listener->setOption(array('id' => $this->getId()));
+      $listener = new listener();
+      $listener->setClass(__CLASS__);
+      $listener->setFunction('pullRefresh');
+      $listener->setOption(array('id' => $this->getId()));
     }
     $listener->emptyEvent();
     $listener->addEvent($cmd->getId());
-    
+
     $listener->save();
   }
 
-  // Fonction exécutée automatiquement avant la création de l'équipement
-  public function preInsert() {
-  }
-
-  // Fonction exécutée automatiquement après la création de l'équipement
-  public function postInsert() {
-  }
-
-  // Fonction exécutée automatiquement avant la mise à jour de l'équipement
-  public function preUpdate() {
-  }
-
-  // Fonction exécutée automatiquement après la mise à jour de l'équipement
-  public function postUpdate() {
-  }
-
   // Fonction exécutée automatiquement avant la sauvegarde (création ou mise à jour) de l'équipement
-  public function preSave() {
+  public function preSave()
+  {
+    log::add(__CLASS__, 'debug', '*** save ***');
+
+    // Mise à jour sous info
+    log::add(__CLASS__, 'debug', '  mise à jour MinMaxValue');
+    $cmdLampe = $this->getLampCommand(true);
+    if ($cmdLampe != null) {
+      $this->setMinMaxValueConfiguration($cmdLampe);
+    }
+    // ******************************
   }
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
-  public function postSave() {
-    log::add(__CLASS__, 'debug', 'postSave');
+  public function postSave()
+  {
+    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
 
     // sun_elevation
     $sunElevation = $this->getCmd(null, 'sun_elevation');
     if (!is_object($sunElevation)) {
-        $sunElevation = new naturalLightCmd();
-        $sunElevation->setLogicalId('sun_elevation');
-        $sunElevation->setName(__('Sun Elevation', __FILE__));
-        $sunElevation->setIsVisible(1);
-        $sunElevation->setIsHistorized(0);
-        $sunElevation->setUnite('°');
+      $sunElevation = new naturalLightCmd();
+      $sunElevation->setLogicalId('sun_elevation');
+      $sunElevation->setName(__('Sun Elevation', __FILE__));
+      $sunElevation->setIsVisible(1);
+      $sunElevation->setIsHistorized(0);
+      $sunElevation->setUnite('°');
     }
     $sunElevation->setEqLogic_id($this->getId());
     $sunElevation->setType('info');
@@ -160,31 +152,28 @@ class naturalLight extends eqLogic {
     // temperature_color
     $temperatureColor = $this->getCmd(null, 'temperature_color');
     if (!is_object($temperatureColor)) {
-        $temperatureColor = new naturalLightCmd();
-        $temperatureColor->setLogicalId('temperature_color');
-        $temperatureColor->setName(__('Temperature color', __FILE__));
-        $temperatureColor->setIsVisible(1);
-        $temperatureColor->setIsHistorized(0);
-        $temperatureColor->setUnite('mired');
+      $temperatureColor = new naturalLightCmd();
+      $temperatureColor->setLogicalId('temperature_color');
+      $temperatureColor->setName(__('Temperature color', __FILE__));
+      $temperatureColor->setIsVisible(1);
+      $temperatureColor->setIsHistorized(0);
     }
     $temperatureColor->setEqLogic_id($this->getId());
     $temperatureColor->setType('info');
     $temperatureColor->setSubType('numeric');
-    $temperatureColor->setGeneric_type('LIGHT_COLOR_TEMP');
+    $temperatureColor->setGeneric_type('GENERIC_INFO');
 
-    // $value = false;
-    // $sunElevation->setValue($value);
     $temperatureColor->save();
     unset($temperatureColor);
 
     // refresh
     $refresh = $this->getCmd(null, 'refresh');
     if (!is_object($refresh)) {
-        $refresh = new naturalLightCmd();
-        $refresh->setLogicalId('refresh');
-        $refresh->setIsVisible(1);
-        $refresh->setName(__('Rafraichir', __FILE__));
-        $refresh->setOrder(0);
+      $refresh = new naturalLightCmd();
+      $refresh->setLogicalId('refresh');
+      $refresh->setIsVisible(1);
+      $refresh->setName(__('Rafraichir', __FILE__));
+      $refresh->setOrder(0);
     }
     $refresh->setEqLogic_id($this->getId());
     $refresh->setType('action');
@@ -192,6 +181,7 @@ class naturalLight extends eqLogic {
     $refresh->save();
     unset($refresh);
 
+    // Listener ajouté sur la lampe, uniquement si elle est paramétrée
     $lamp_state = $this->getConfiguration('lamp_state');
     if (empty($lamp_state)) {
       return;
@@ -201,198 +191,308 @@ class naturalLight extends eqLogic {
   }
 
   // Fonction exécutée automatiquement avant la suppression de l'équipement
-  public function preRemove() {
+  public function preRemove()
+  {
     $this->removeListener();
   }
 
   // Fonction exécutée automatiquement après la suppression de l'équipement
-  public function postRemove() {
+  public function postRemove()
+  {
   }
 
-  /*
-  * Permet de crypter/décrypter automatiquement des champs de configuration des équipements
-  * Exemple avec le champ "Mot de passe" (password)
-  public function decrypt() {
-    $this->setConfiguration('password', utils::decrypt($this->getConfiguration('password')));
+  /**
+   * Initialisation de minValue et maxValue 
+   * en prenant les limites de la lampes
+   */
+  private function setMinMaxValueConfiguration(cmd $cmdLampe)
+  {
+    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+
+    if ($cmdLampe == null) {
+      //log::add(__CLASS__, 'debug', '  commande Lamp pas encore renseignée');
+      return;
+    }
+
+    // MinValue
+    $minValue = $this->getConfiguration('minValue');
+    $minValueDefault = $cmdLampe->getConfiguration('minValue');
+    if ($minValue === '') {
+      log::add(__CLASS__, 'debug', '  minValue non initialisé');
+      log::add(__CLASS__, 'debug', '  minValue devient: ' . $minValueDefault);
+      $this->setConfiguration('minValue', $minValueDefault);
+    }
+    $this->setConfiguration('minValueDefault', $minValueDefault);
+
+    // MaxValue
+    $maxValue = $this->getConfiguration('maxValue');
+    $maxValueDefault = $cmdLampe->getConfiguration('maxValue');
+    if ($maxValue === '') {
+      log::add(__CLASS__, 'debug', '  maxValue non initialisé');
+      log::add(__CLASS__, 'debug', '  maxValue devient: ' . $maxValueDefault);
+      $this->setConfiguration('maxValue', $maxValueDefault);
+    }
+    $this->setConfiguration('maxValueDefault', $maxValueDefault);
   }
-  public function encrypt() {
-    $this->setConfiguration('password', utils::encrypt($this->getConfiguration('password')));
-  }
-  */
 
-  /*
-  * Permet de modifier l'affichage du widget (également utilisable par les commandes)
-  public function toHtml($_version = 'dashboard') {}
-  */
-
-  /*
-  * Permet de déclencher une action avant modification d'une variable de configuration du plugin
-  * Exemple avec la variable "param3"
-  public static function preConfig_param3( $value ) {
-    // do some checks or modify on $value
-    return $value;
-  }
-  */
-
-  /*
-  * Permet de déclencher une action après modification d'une variable de configuration du plugin
-  * Exemple avec la variable "param3"
-  public static function postConfig_param3($value) {
-    // no return value
-  }
-  */
-
-  public function computeLamp() {
-    log::add(__CLASS__, 'debug', '  computeLamp()');
-
-    $eqlogic = $this;
-
+  public function computeLamp()
+  {
     try {
+      // Optimisation : Voir s'il faut calculer la couleur et l'élévation
+      $cmdSunElevation = $this->getCmd(null, 'sun_elevation');
+      // Récupérer la commande de la lampe
+      $cmdTempColor = $this->getCmd(null, 'temperature_color');
+      $state = $this->getLampState();
+
+      if ($state === 0 && !$cmdSunElevation->getIsHistorized() && !$cmdTempColor->getIsHistorized()) {
+        // Aucun interêt de faire des calculs
+        return;
+      }
+
       // Calculer Sun elevation
       $sunElevation = $this->computeSunElevation();
-
       // set Sun Elevation value
-      $cmdSunElevation = $eqlogic->getCmd(null, 'sun_elevation');
       $cmdSunElevation->event($sunElevation);
 
-      // Obtenir état de la lampe
-      $state = 0;
-      $lamp_state = $eqlogic->getConfiguration('lamp_state');
-      $lamp_state = str_replace('#', '', $lamp_state);
-      if ($lamp_state != '') {
-        $cmd = cmd::byId($lamp_state);
-        if ($cmd == null) {
-          log::add(__CLASS__, 'error', ' Mauvaise lamp_state :' . $lamp_state);
-          throw new Exception('Mauvaise lamp_state');
-        } else {
-          $state = $cmd->execCmd();
-          log::add(__CLASS__, 'debug', '  lamp_state: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']:'.$state);
-        }
+      if ($state === 0 && !$cmdTempColor->getIsHistorized()) {
+        // Aucun interêt de faire des calculs
+        return;
+      }
+
+      // Test : calcul sur SunElevation
+      $temp_color = $this->computeTempColorBySunElevation($sunElevation);
+
+      // Plugin Ikea ------------------------
+      if ($this->getConfiguration('minValueDefault') == 0 &&
+          $this->getConfiguration('maxValueDefault') == 100) {
+            log::add(__CLASS__, 'debug', '  gestion en pourcentage');
+
+          // plugin gérant la notion de pourcentage
+          // ampoule Ikea : min=153 mired, max: 370 mired
+          $maxi = 370;
+          $mini = 153;
+
+          $temp_color = 100 - intval(100 * ($maxi - $temp_color) / ($maxi - $mini));
+          // Correction selon borne
+          if ($temp_color < 0) $temp_color = 0;
+          if ($temp_color > 100) $temp_color = 100;
+
+          log::add(__CLASS__, 'debug', '  temp_color corrigé :' . $temp_color . '%');
+      }
+      // -------------------------
+
+      // Plugin inconnu en Kelvin
+      if ($this->getConfiguration('minValueDefault') > 500 &&
+          $this->getConfiguration('maxValueDefault') > 500) {
+          log::add(__CLASS__, 'debug', '  gestion en Kelvin');
+
+          $temp_color = intval(1000000 / $temp_color);
+          log::add(__CLASS__, 'debug', '  temp_color corrigé :' . $temp_color.'K');
+
+      }
+      // -------------------------
+
+      $cmd = $this->getLampCommand();
+      
+      // Recherche de la configuration
+      $minValue = $this->getConfiguration('minValue');
+      if (!isset($minValue)) {
+        // Ancien équipement sans valeur minValue
+        log::add(__CLASS__, 'debug', '  minValue pris de la lampe');
+        $minValue = $cmd->getConfiguration('minValue');
+      }
+      $maxValue = $this->getConfiguration('maxValue');
+      if (!isset($maxValue)) {
+        // Ancien équipement sans valeur maxValue
+        log::add(__CLASS__, 'debug', '  maxValue pris de la lampe');
+        $maxValue = $cmd->getConfiguration('maxValue');
+      }
+      log::add(__CLASS__, 'debug', '  minValue: ' . $minValue);
+      log::add(__CLASS__, 'debug', '  maxValue: ' . $maxValue);
+      
+      if (!isset($minValue)) {
+        log::add(__CLASS__, 'error', '  minValue non renseignée');
+        throw new Exception('minValue non renseignée');
+      }
+      if (!isset($maxValue)) {
+        log::add(__CLASS__, 'error', '  maxValue non renseignée');
+        throw new Exception('maxValue non renseignée');
+      }
+      // -------------------------
+
+      // Calcul de la température couleur gérable par l'équipement
+      if ($temp_color > $maxValue) {
+        $temp_color = $maxValue;
+      }
+      if ($temp_color < $minValue) {
+        $temp_color = $minValue;
+      }
+      log::add(__CLASS__, 'info', 'température couleur: ' . $temp_color);
+
+      // set temp_color value
+      $cmdTempColor->event($temp_color);
+
+      // Gestion de la condition
+      $condition = $this->getConfiguration('condition');
+      log::add(__CLASS__, 'debug', '  condition : '.$condition);
+      $conditionResult = true;
+      if ($condition != '')  {
+          // Evaluation
+          $conditionResult = jeedom::evaluateExpression($condition);
+          log::add(__CLASS__, 'debug', '  condition result : '.($conditionResult ? "true" : "false"));
       }
       else {
-        log::add(__CLASS__, 'error', ' lamp_state non renseigné');
-        throw new Exception('lamp_state non renseigné');
+        log::add(__CLASS__, 'info', 'pas de condition');
+      }
+      if (!$conditionResult) {
+        log::add(__CLASS__, 'info', 'condition indique arrêt');
+        return;
       }
 
-      // Calcul de la température couleur
-      $temp_color = intval(1000000/(4791.67 - 3290.66/(1 + 0.222 * $sunElevation ** 0.81)));
-      log::add(__CLASS__, 'debug', '  temp_color calculé: ' . $temp_color);
-
-      // Obtenir la commande Temperature Couleur
-      $temperature_color = $eqlogic->getConfiguration('temperature_color');
-      $temperature_color = str_replace('#', '', $temperature_color);
-      if ($temperature_color != '') {
-        $cmd = cmd::byId($temperature_color);
-        if ($cmd == null) {
-          log::add(__CLASS__, 'error', ' Mauvaise temperature_color :' . $temperature_color);
-          throw new Exception('Mauvaise temperature_color');
-        } else {
-          log::add(__CLASS__, 'debug', '  temperature_color: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']');
-          
-          // Vérification du type generique
-          $genericType = $cmd->getGeneric_type();
-          log::add(__CLASS__, 'debug', '  getGenericType: ' . $genericType);
-          if ($genericType != 'LIGHT_SET_COLOR_TEMP') {
-            log::add(__CLASS__, 'error', ' Mauvaise commande pour la lampe : temperature_color');
-          throw new Exception('Mauvaise commande pour la lampe : temperature_color');
-          }
-
-          // Recherche de la configuration
-          $minValue = $cmd->getConfiguration('minValue');
-          $maxValue = $cmd->getConfiguration('maxValue');
-          log::add(__CLASS__, 'debug', '  minValue: ' . $minValue);
-          log::add(__CLASS__, 'debug', '  maxValue: ' . $maxValue);         
-
-          if (empty($minValue)) {
-            log::add(__CLASS__, 'error', ' minValue non renseignée');
-            throw new Exception('minValue non renseignée');
-          }
-          if (empty($maxValue)) {
-            log::add(__CLASS__, 'error', ' maxValue non renseignée');
-            throw new Exception('maxValue non renseignée');
-          }
-
-          // Calcul de la température couleur gérable par l'équipement
-          if ($temp_color > $maxValue){
-            $temp_color = $maxValue;
-          }
-          if ($temp_color < $minValue) {
-            $temp_color = $minValue;
-          }
-          log::add(__CLASS__, 'info', 'température couleur: ' . $temp_color);
-
-          // set temp_color value
-          $cmdTempColor = $eqlogic->getCmd(null, 'temperature_color');
-          $cmdTempColor->event($temp_color);
-          $cmdTempColor->setConfiguration('minValue', $minValue);
-          $cmdTempColor->setConfiguration('maxValue', $maxValue);
-          $cmdTempColor->save();
-
-          // Lumière éteinte : on ne fait rien
-          if ($state == 1) {
-            log::add(__CLASS__, 'info', ' lampe allumée');
-            $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
-          } else {
-            log::add(__CLASS__, 'info', ' lampe éteinte');
-          }
-        }
+      // Lumière éteinte : on ne fait rien
+      if ($state == 1) {
+        log::add(__CLASS__, 'info', 'lampe allumée');
+        $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
+      } else {
+        log::add(__CLASS__, 'info', 'lampe éteinte');
       }
-      else {
-        log::add(__CLASS__, 'error', ' temperature_color non renseigné');
-        throw new Exception('temperature_color non renseigné');
-      }
-    }
-    catch (Exception $ex) {      
+    } catch (Exception $ex) {
+      log::add(__CLASS__, 'error', ' erreur: ' . $ex->getMessage());
     }
   }
 
-    /**
+  /**
    * Calculer la hauteur du soleil
    * @return {float} Hauteur du soleil
    */
-  private function computeSunElevation(): float {
-    $latitude =config::bykey('info::latitude');
+  private function computeSunElevation(): float
+  {
+    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+
+    $latitude = config::bykey('info::latitude');
     $longitude = config::bykey('info::longitude');
     $altitude = config::bykey('info::altitude');
 
-    log::add(__CLASS__, 'debug', ' latitude :' . $latitude);
-    log::add(__CLASS__, 'debug', ' longitude :' . $longitude);
-    log::add(__CLASS__, 'debug', ' altitude :' . $altitude);
-
-
-    if (!isset($latitude) || !isset($longitude)) {
-      log::add(__CLASS__, 'error', ' latitude ou longitude non renseigné');
+    if (!isset($latitude) || !isset($longitude) || !isset($altitude)) {
+      log::add(__CLASS__, 'error', ' latitude, longitude ou altitude non renseigné');
       throw new Exception();
     }
 
     $SD = new SolarData\SolarData();
-    $SD->setObserverPosition(config::byKey('info::latitude'), config::byKey('info::longitude'), config::byKey('info::altitude'));
+    $SD->setObserverPosition($latitude, $longitude, $altitude);
     $SD->setObserverDate(date('Y'), date('n'), date('j'));
-    $SD->setObserverTime(date('G'), date('i'),date('s'));
+    $SD->setObserverTime(date('G'), date('i'), date('s'));
     //ARGS : difference in seconds between the Earth rotation time and the Terrestrial Time (TT)/
     $SD->setDeltaTime(67);
     $SD->setObserverTimezone(date('Z') / 3600);
+
+    /* ARGS : Observer mean pressure in Millibar */
+    $SD->setObserverAtmosphericPressure(820);
+
+    /* ARGS : Observer mean temperature in Celsius */
+    $SD->setObserverAtmosphericTemperature(11.0);
+
     $SunPosition = $SD->calculate();
     $sunElevation = floatval(round($SunPosition->e0°, 2));
     log::add(__CLASS__, 'debug', ' sunElevation :' . $sunElevation);
 
-    if ($sunElevation < 0)
-    {
-      $sunElevation = 0;
-    }
-    if ($sunElevation > 90){
-      $sunElevation = 90;
-    }
-    log::add(__CLASS__, 'debug', ' sunElevation corrigé :' . $sunElevation);
-
     return floatval($sunElevation);
   }
 
-  /*     * **********************Getteur Setteur*************************** */
+  /**
+   * Formule par rapport à l'élévation du soleil 
+   *  Assez rouge en hiver car soleil par très haut
+   *  https://keisan.casio.com/exec/system/1224682331
+   * @param {int} $sunElevation Position du soleil en °
+   * @return {int} Température de la couleur
+   */
+  private function computeTempColorBySunElevation($sunElevation): int
+  {
+    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__ . ' (test)');
+    $correctedSunElevation = $sunElevation;
+    if ($correctedSunElevation < 0) {
+      $correctedSunElevation = 0;
+    }
+    if ($correctedSunElevation > 90) {
+      $correctedSunElevation = 90;
+    }
+    // log::add(__CLASS__, 'debug', ' sunElevation corrigé :' . $correctedSunElevation);
 
+    // Calcul de la température couleur
+    $temp_color = intval(1000000 / (4791.67 - 3290.66 / (1 + 0.222 * $correctedSunElevation ** 0.81)));
+    log::add(__CLASS__, 'debug', '  temp_color calculé SunPosition: ' . $temp_color);
+
+    return $temp_color;
+  }
+
+  /**
+   * Récupérer la commande lié à la température couleur de la lampe
+   */
+  public function getLampCommand(bool $initialisation = false): ?cmd
+  {
+    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+
+    $cmd = null;
+    // Obtenir la commande Temperature Couleur
+    $temperature_color = $this->getConfiguration('temperature_color');
+    $temperature_color = str_replace('#', '', $temperature_color);
+    if ($temperature_color != '') {
+      $cmd = cmd::byId($temperature_color);
+      if ($cmd == null) {
+        log::add(__CLASS__, 'error', '  Mauvaise temperature_color :' . $temperature_color);
+        throw new Exception('Mauvaise temperature_color');
+      } else {
+        log::add(__CLASS__, 'info', 'lampe: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']');
+
+        // Vérification du type generique
+        $genericType = $cmd->getGeneric_type();
+        log::add(__CLASS__, 'debug', '  getGenericType: ' . $genericType);
+        if ($genericType != 'LIGHT_SET_COLOR_TEMP') {
+          log::add(__CLASS__, 'error', '  Mauvaise commande pour la lampe : temperature_color');
+          throw new Exception('Mauvaise commande pour la lampe : temperature_color');
+        }
+      }
+    } else {
+      if (!$initialisation) {
+        log::add(__CLASS__, 'error', '  temperature_color non renseigné');
+        throw new Exception('temperature_color non renseigné');
+      }
+    }
+
+    return $cmd;
+  }
+
+  /**
+   * Obtenir l'état de la lampe (allumée 1 ou éteint 0)
+   */
+  private function getLampState(): int
+  {
+    // Obtenir état de la lampe
+    $state = 0;
+    $lamp_state = $this->getConfiguration('lamp_state');
+    $lamp_state = str_replace('#', '', $lamp_state);
+    if ($lamp_state != '') {
+      $cmd = cmd::byId($lamp_state);
+      if ($cmd == null) {
+        log::add(__CLASS__, 'error', ' Mauvaise lamp_state :' . $lamp_state);
+        throw new Exception('Mauvaise lamp_state');
+      } else {
+        $state = boolval($cmd->execCmd()) ? 1 : 0;
+        log::add(__CLASS__, 'debug', '  lamp_state: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']:' . $state);
+      }
+    } else {
+      log::add(__CLASS__, 'error', ' lamp_state non renseigné');
+      throw new Exception('lamp_state non renseigné');
+    }
+
+    return $state;
+  }
+
+  /*     * **********************Getteur Setteur*************************** */
 }
 
-class naturalLightCmd extends cmd {
+class naturalLightCmd extends cmd
+{
   /*     * *************************Attributs****************************** */
 
   /*
@@ -411,10 +511,10 @@ class naturalLightCmd extends cmd {
   }
   */
 
-
   // Exécution d'une commande
-  public function execute($_options = array()) {
-    log::add('naturalLight', 'info', ' **** execute ****');
+  public function execute($_options = array())
+  {
+    log::add('naturalLight', 'info', '*** ' . __FUNCTION__ . ' ***');
 
     if ($this->getLogicalId() == 'refresh') {
       $eqlogic = $this->getEqLogic(); //récupère l'éqlogic de la commande $this
@@ -423,5 +523,4 @@ class naturalLightCmd extends cmd {
   }
 
   /*     * **********************Getteur Setteur*************************** */
-
 }

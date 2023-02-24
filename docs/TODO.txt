@@ -1,0 +1,8 @@
+TODO :
+* Prendre l'unité (mired ou %) de l'équipement d'origine
+A voir pour Kelvin
+
+* Condition perso : gérer valeur min/max par rapport à Default
+
+* Cron global pour calcul commun puis parcours des équipements
+(voir code proposé)

@@ -14,8 +14,8 @@
 	"changelog": "https://github.com/Arnaud69Jeedom/naturalLight/blob/master/docs/#language#/changelog.md",
 	"documentation": "https://github.com/Arnaud69Jeedom/naturalLight/blob/master/docs/#language#/index.md",
 	
-	"changelog_beta": "https://github.com/Arnaud69Jeedom/naturalLight/blob/develop/docs/#language#/changelog.md",
-	"documentation_beta": "https://github.com/Arnaud69Jeedom/naturalLight/blob/develop/docs/#language#/index.md",
+	"changelog_beta": "https://github.com/Arnaud69Jeedom/naturalLight/blob/beta/docs/#language#/changelog.md",
+	"documentation_beta": "https://github.com/Arnaud69Jeedom/naturalLight/blob/beta/docs/#language#/index.md",
    
 	"language": [
 		"fr_FR"
