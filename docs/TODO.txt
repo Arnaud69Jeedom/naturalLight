@@ -1,9 +1,4 @@
 TODO :
-* Prendre min/max uniquement à la création
-L'utilisateur pourra le personnaliser.
-Prévoir vérification de la valeur tout de même à l'éxécution ?
-Puis utiliser MinValue et MaxValue de Natural et pas de la lampe
-
 * Prendre l'unité (mired ou %) de l'équipement d'origine
 A voir pour Kelvin
 

@@ -286,7 +286,7 @@ class naturalLight extends eqLogic
           $this->getConfiguration('maxValueDefault') > 500) {
           log::add(__CLASS__, 'debug', '  gestion en Kelvin');
 
-          $temp_color = 1000000 / $temp_color;
+          $temp_color = intval(1000000 / $temp_color);
           log::add(__CLASS__, 'debug', '  temp_color corrigé :' . $temp_color.'K');
 
       }
