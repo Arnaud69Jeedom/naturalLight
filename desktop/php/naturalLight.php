@@ -148,74 +148,184 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<!-- Commande de la lumières -->
 				<form class="form-horizontal">
 					<fieldset>
-						<div class="col-lg-6">
-							<legend><i class="icon jeedom2-lightbulb25"></i> {{Lampes}}</legend>
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Température couleur}}</label>
-								<div class="col-xs-11 col-sm-8">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="temperature_color" data-concat="0" />
-										<span class="input-group-btn">
-											<a class="btn btn-default listCmdAction">
-												<i class="fas fa-list-alt"></i>
-											</a>
-										</span>
+						<div class="row">
+							<div class="col-lg-6">
+								<div class="form-group">
+									<legend><i class="icon jeedom2-lightbulb25"></i> {{Lampe}}</legend>
+									<label class="col-sm-4 control-label">{{Lampe état}}</label>
+									<div class="col-xs-11 col-sm-8">
+										<div class="input-group">
+											<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
+											<span class="input-group-btn">
+												<a class="btn btn-default listCmdInfo">
+													<i class="fas fa-list-alt"></i>
+												</a>
+											</span>
+										</div>
 									</div>
 								</div>
 							</div>
+							<div class="col-lg-6"></div>
+						</div>
 
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Lampe état}}</label>
-								<div class="col-xs-11 col-sm-8">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
-										<span class="input-group-btn">
-											<a class="btn btn-default listCmdInfo">
-												<i class="fas fa-list-alt"></i>
-											</a>
-										</span>
+						<div class="row">
+							<div class="col-lg-6">
+								<div class="form-group">
+									<legend><i class="icon jeedom2-lightbulb25"></i> {{Température Lampe}}</legend>
+									<div class="form-group">
+										<label class="col-sm-4 control-label">{{Activer}}</label>
+										<div class="col-sm-3">
+											<div class="input-group">
+												<span class="input-group-btn">
+													<input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="temperature_enable" />
+												</span>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-4 control-label">{{Température couleur}}</label>
+										<div class="col-xs-11 col-sm-8">
+											<div class="input-group">
+												<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="temperature_color" data-concat="0" />
+												<span class="input-group-btn">
+													<a class="btn btn-default listCmdAction">
+														<i class="fas fa-list-alt"></i>
+													</a>
+												</span>
+											</div>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-4 control-label">{{valeur}}<sub>(mired)</sub></label>
+										<div class="col-sm-6 input-group">
+											<span class="input-group-addon roundedLeft tippied">Min.</span>
+											<input type="number" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="minValue">
+											<span class="input-group-addon tippied">Max.</span>
+											<input type="number" class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="maxValue">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-4 control-label">{{Valeur par défaut}}<sub>(mired)</sub></label>
+										<div class="col-sm-6 input-group">
+											<span class="input-group-addon roundedLeft tippied">Min.</span>
+											<input type="number" disabled class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="minValueDefault">
+											<span class="input-group-addon tippied">Max.</span>
+											<input type="number" disabled class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="maxValueDefault">
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-sm-4 control-label">{{Condition de lancement}}
+											<sup><i class="fas fa-question-circle tooltips" title="{{Condition à remplir pour que la gestion automatique s'active (vide par défaut = toujours active)}}"></i></sup>
+										</label>
+										<div class="col-xs-11 col-sm-8">
+											<div class="input-group">
+												<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="condition" data-concat="1" />
+												<span class="input-group-btn">
+													<a class="btn btn-default listCmdInfoCondition">
+														<i class="fas fa-list-alt"></i>
+													</a>
+												</span>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
-
-
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{valeur}}<sub>(mired)</sub></label>
-								<div class="col-sm-6 input-group">
-									<span class="input-group-addon roundedLeft tippied">Min.</span>
-									<input type="number" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="minValue">
-									<span class="input-group-addon tippied">Max.</span>
-									<input type="number" class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="maxValue">
+							<div class="col-lg-6">
+								<legend><i class="icon jeedom2-lightbulb25"></i> {{Luminosité Lampe}}</legend>
+								<div class="form-group">
+									<label class="col-sm-4 control-label">{{Activer}}</label>
+									<div class="col-sm-3">
+										<div class="input-group">
+											<span class="input-group-btn">
+												<input type="checkbox" class="eqLogicAttr" data-l1key="configuration" data-l2key="brightness_enable">
+											</span>
+										</div>
+									</div>
 								</div>
-							</div>
 
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Valeur par défaut}}<sub>(mired)</sub></label>
-								<div class="col-sm-6 input-group">
-									<span class="input-group-addon roundedLeft tippied">Min.</span>
-									<input type="number" disabled class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="minValueDefault">
-									<span class="input-group-addon tippied">Max.</span>
-									<input type="number" disabled class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="maxValueDefault">
+
+								<div class="form-group">
+									<label class="col-sm-4 control-label">{{Luminosité}}</label>
+									<div class="col-xs-11 col-sm-8">
+										<div class="input-group">
+											<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="brightness" data-concat="0" />
+											<span class="input-group-btn">
+												<a class="btn btn-default listCmdAction">
+													<i class="fas fa-list-alt"></i>
+												</a>
+											</span>
+										</div>
+									</div>
 								</div>
-							</div>
 
-							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Condition de lancement}}
-									<sup><i class="fas fa-question-circle tooltips" title="{{Condition à remplir pour que la gestion automatique s'active (vide par défaut = toujours active)}}"></i></sup>
-								</label>
-								<div class="col-xs-11 col-sm-8">
-									<div class="input-group">
-										<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="condition" data-concat="1" />
-										<span class="input-group-btn">
-											<a class="btn btn-default listCmdInfoCondition">
-												<i class="fas fa-list-alt"></i>
-											</a>
-										</span>
+								<div class="form-group">
+									<label class="col-sm-4 control-label">{{valeur}}<sub>(mired)</sub></label>
+									<div class="col-sm-6 input-group">
+										<span class="input-group-addon roundedLeft tippied">Min.</span>
+										<input type="number" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="minBrightnessValue">
+										<span class="input-group-addon tippied">Max.</span>
+										<input type="number" class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="maxBrightnessValue">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-4 control-label">{{Valeur par défaut}}</label>
+									<div class="col-sm-6 input-group">
+										<span class="input-group-addon roundedLeft tippied">Min.</span>
+										<input type="number" disabled class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="minBrightnessValueDefault">
+										<span class="input-group-addon tippied">Max.</span>
+										<input type="number" disabled class="eqLogicAttr form-control roundedRight" data-l1key="configuration" data-l2key="maxBrightnessValueDefault">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-4 control-label">Heure matin</label>
+									<div class="col-sm-2">
+										<div class="input-group">
+											<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="morningHour">
+
+										</div>
+									</div>
+									<label class="col-sm-2 control-label">Durée<sub>(min)</sub></label>
+									<div class="col-sm-2 has-success">
+										<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="morningDuration" value="60">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-4 control-label">Heure soir</label>
+									<div class="col-sm-2">
+										<div class="input-group">
+											<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="eveningHour">
+
+										</div>
+									</div>
+									<label class="col-sm-2 control-label">Durée<sub>(min)</sub></label>
+									<div class="col-sm-2 has-success">
+										<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="eveningDuration" value="60">
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-4 control-label">{{Condition de lancement}}
+										<sup><i class="fas fa-question-circle tooltips" title="{{Condition à remplir pour que la gestion automatique s'active (vide par défaut = toujours active)}}"></i></sup>
+									</label>
+									<div class="col-xs-11 col-sm-8">
+										<div class="input-group">
+											<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="brightnessCondition" data-concat="1" />
+											<span class="input-group-btn">
+												<a class="btn btn-default listCmdInfoCondition">
+													<i class="fas fa-list-alt"></i>
+												</a>
+											</span>
+										</div>
 									</div>
 								</div>
 							</div>
-
-
 						</div>
 					</fieldset>
 				</form>
