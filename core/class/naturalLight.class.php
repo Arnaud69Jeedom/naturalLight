@@ -247,6 +247,20 @@ class naturalLight extends eqLogic
     }
 
     $this->setListener();
+
+    // Vérification
+    $isValid = $this->checkLampState();
+    if (!$isValid) {
+      throw new Exception('Paramétrage invalide. Voir les logs');
+    }
+    $isValid = $this->checkTemperatureConfiguration();
+    if (!$isValid) {
+      throw new Exception('Paramétrage invalide. Voir les logs');
+    }
+    $isValid = $this->checkBrightnessConfiguration();
+    if (!$isValid) {
+      throw new Exception('Paramétrage invalide. Voir les logs');
+    }
   }
 
   // Fonction exécutée automatiquement avant la suppression de l'équipement
@@ -258,6 +272,246 @@ class naturalLight extends eqLogic
   // Fonction exécutée automatiquement après la suppression de l'équipement
   public function postRemove()
   {
+  }
+
+/**
+   * Vérifier le paramétrage lié à l'état de la lampe
+   * En cas de non validité, le log indique l'erreur
+   * @return true si le paramétrage est correct, false sinon
+   */
+  public function checkLampState() : bool {
+    $isValid = true;
+    $messages = [];
+
+    // lamp_state
+    $cmdLampState = $this->getConfiguration('lamp_state');
+    if ($cmdLampState == '') {
+      array_push($messages, 'Commande non renseignée');
+      $isValid = false;
+    } else {
+      $cmdLampState = str_replace('#', '', $cmdLampState);
+      $cmdLampState = cmd::byId($cmdLampState);
+      if (!is_object($cmdLampState)) {
+        array_push($messages, 'Commande invalide');
+        $isValid = false;
+      } else {
+        $genericType = $cmdLampState->getGeneric_type();
+        if ($genericType != 'LIGHT_STATE') {
+          array_push($messages, 'Mauvais type générique');
+          $isValid = false;
+        }
+      }
+    }
+
+    // Gestion des erreurs
+    foreach($messages as $message) {
+      log::add(__CLASS__, 'error', '  checkTemperatureConfiguration: '.$message);
+    }
+    return $isValid;
+  }
+
+  /**
+   * Vérifier le paramétrage lié à la couleur température
+   * En cas de non validité, le log indique l'erreur
+   * @return true si le paramétrage est correct, false sinon
+   */
+  public function checkTemperatureConfiguration() : bool {
+    $isValid = true;
+    $messages = [];
+
+    // temperature_enable
+    $isActivated = $this->getConfiguration('temperature_enable');
+    if (!$isActivated) {
+      return true;
+    }
+    
+    // temperature_color
+    $cmdTempColor = $this->getConfiguration('temperature_color');
+    if ($cmdTempColor == '') {
+      array_push($messages, 'Commande non renseignée');
+      $isValid = false;
+    } else {
+      $cmdTempColor = str_replace('#', '', $cmdTempColor);
+      $cmdTempColor = cmd::byId($cmdTempColor);
+      if (!is_object($cmdTempColor)) {
+        array_push($messages, 'Commande invalide');
+        $isValid = false;
+      } else {
+        $genericType = $cmdTempColor->getGeneric_type();
+        if ($genericType != 'LIGHT_SET_COLOR_TEMP') {
+          array_push($messages, 'Mauvais type générique');
+          $isValid = false;
+        }
+      }
+    }
+
+    // minValue
+    $minValue = $this->getConfiguration('minValue');
+    $minValueDefault = $this->getConfiguration('minValueDefault');
+    if ($minValue == '') {
+      array_push($messages, 'minValue non renseignée');
+      $isValid = false;
+    } else if ( !is_numeric($minValue)){
+      array_push($messages, 'minValue doit être un nombre');
+      $isValid = false;
+    } else if ($minValue < 0) {
+      array_push($messages, 'minValue doit être un nombre positif');
+      $isValid = false;
+    } else if (isset($minValueDefault) &&
+             is_numeric($minValueDefault) &&
+             $minValue < $minValueDefault) {
+      array_push($messages, 'minValue doit être un supérieure à la valeur minValueDefault');
+      $isValid = false;
+    }
+
+    // maxValue
+    $maxValue = $this->getConfiguration('maxValue');
+    $maxValueDefault = $this->getConfiguration('maxValueDefault');
+    if ($maxValue == '') {
+      array_push($messages, 'maxValue non renseignée');
+      $isValid = false;
+    } else if ( !is_numeric($maxValue)){
+      array_push($messages, 'maxValue doit être un nombre');
+      $isValid = false;
+    } else if ($maxValue < 0) {
+      array_push($messages, 'maxValue doit être un nombre positif');
+      $isValid = false;
+    } else if (isset($maxValueDefault) &&
+              is_numeric($maxValueDefault) &&
+              $maxValue > $maxValueDefault) {
+      array_push($messages, 'maxValue doit être un inférieure à la valeur maxValueDefault');
+      $isValid = false;
+    }
+
+    // minValue & maxValue
+    if ($isValid && $minValue >= $maxValue) {
+      array_push($messages, 'minValue doit être inférieur à maxValue');
+      $isValid = false;
+    }
+
+    // Gestion des erreurs
+    foreach($messages as $message) {
+      log::add(__CLASS__, 'error', '  checkTemperatureConfiguration: '.$message);
+    }
+    return $isValid;
+  }
+
+  /**
+   * Vérifier le paramétrage lié à la luminosité
+   * En cas de non validité, le log indique l'erreur
+   * @return true si le paramétrage est correct, false sinon
+   */
+  public function checkBrightnessConfiguration() : bool {
+    $isValid = true;
+    $messages = [];
+
+    // temperature_enable
+    $isActivated = $this->getConfiguration('brightness_enable');
+    if (!$isActivated) {
+      return true;
+    }
+    
+    // brightness
+    $cmdBrightnessColor = $this->getConfiguration('brightness');
+    if ($cmdBrightnessColor == '') {
+      array_push($messages, 'Commande non renseignée');
+      $isValid = false;
+    } else {
+      $cmdBrightnessColor = str_replace('#', '', $cmdBrightnessColor);
+      $cmdBrightnessColor = cmd::byId($cmdBrightnessColor);
+      if (!is_object($cmdBrightnessColor)) {
+        array_push($messages, 'Commande invalide');
+        $isValid = false;
+      } else {
+        $genericType = $cmdBrightnessColor->getGeneric_type();
+        if ($genericType != 'LIGHT_SLIDER') {
+          array_push($messages, 'Mauvais type générique');
+          $isValid = false;
+        }
+      }
+    }
+
+    // minValue
+    $minValue = $this->getConfiguration('minBrightnessValue');
+    $minValueDefault = $this->getConfiguration('minBrightnessValueDefault');
+    if ($minValue == '') {
+      array_push($messages, 'minValue non renseignée');
+      $isValid = false;
+    } else if ( !is_numeric($minValue)){
+      array_push($messages, 'minValue doit être un nombre');
+      $isValid = false;
+    } else if ($minValue < 0) {
+      array_push($messages, 'minValue doit être un nombre positif');
+      $isValid = false;
+    } else if (isset($minValueDefault) &&
+             is_numeric($minValueDefault) &&
+             $minValue < $minValueDefault) {
+      array_push($messages, 'minValue doit être un supérieure à la valeur minValueDefault');
+      $isValid = false;
+    }
+
+    // maxValue
+    $maxValue = $this->getConfiguration('maxBrightnessValue');
+    $maxValueDefault = $this->getConfiguration('maxBrightnessValueDefault');
+    if ($maxValue == '') {
+      array_push($messages, 'maxValue non renseignée');
+      $isValid = false;
+    } else if ( !is_numeric($maxValue)){
+      array_push($messages, 'maxValue doit être un nombre');
+      $isValid = false;
+    } else if ($maxValue < 0) {
+      array_push($messages, 'maxValue doit être un nombre positif');
+      $isValid = false;
+    } else if (isset($maxValueDefault) &&
+              is_numeric($maxValueDefault) &&
+              $maxValue > $maxValueDefault) {
+      array_push($messages, 'maxValue doit être un inférieure à la valeur maxValueDefault');
+      $isValid = false;
+    }
+
+    // minValue & maxValue
+    if ($isValid && $minValue >= $maxValue) {
+      array_push($messages, 'minValue doit être inférieur à maxValue');
+      $isValid = false;
+    }
+
+    // morningDuration
+    $duration = $this->getConfiguration('morningDuration');
+    if ($duration == '') {
+      array_push($messages, 'durée matin doit être renseigné');
+      $isValid = false;
+    } else if (!is_numeric($duration)) {
+      array_push($messages, 'durée matin doit être un nombre');
+      $isValid = false;
+    } else if ($duration < 0) {
+      array_push($messages, 'durée matin doit être un nombre positif');
+      $isValid = false;
+    } else if ($duration > 1440) {
+      array_push($messages, 'durée matin doit être un nombre raisonnable');
+      $isValid = false;
+    }
+
+    // eveningDuration
+    $duration = $this->getConfiguration('eveningDuration');
+    if ($duration == '') {
+      array_push($messages, 'durée soir doit être renseigné');
+      $isValid = false;
+    } else if (!is_numeric($duration)) {
+      array_push($messages, 'durée soir doit être un nombre');
+      $isValid = false;
+    } else if ($duration < 0) {
+      array_push($messages, 'durée soir doit être un nombre positif');
+      $isValid = false;
+    } else if ($duration > 1440) {
+      array_push($messages, 'durée soir doit être un nombre raisonnable');
+      $isValid = false;
+    }
+
+    // Gestion des erreurs
+    foreach($messages as $message) {
+      log::add(__CLASS__, 'error', '  checkTemperatureConfiguration: '.$message);
+    }
+    return $isValid;
   }
 
   public function computeLamp()
