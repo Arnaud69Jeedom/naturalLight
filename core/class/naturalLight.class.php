@@ -34,6 +34,7 @@ class naturalLight extends eqLogic
 
     foreach (eqLogic::byType(__CLASS__, true) as $light) {
       if ($light->getIsEnable() == 1) {
+        log::add(__CLASS__, 'info', ' > cron sur ' . $light->getHumanName());
         $light->computeLamp();
       }
     }
@@ -402,6 +403,8 @@ class naturalLight extends eqLogic
    * @return true si le paramétrage est correct, false sinon
    */
   public function checkBrightnessConfiguration() : bool {
+    log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+
     $isValid = true;
     $messages = [];
 
@@ -516,6 +519,8 @@ class naturalLight extends eqLogic
 
   public function computeLamp()
   {
+    log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+
     try {
       // Optimisation : Voir s'il faut calculer la couleur et l'élévation
       $cmdSunElevation = $this->getCmd(null, 'sun_elevation');
@@ -539,17 +544,17 @@ class naturalLight extends eqLogic
       // set Sun Elevation value
       $cmdSunElevation->event($sunElevation);
 
-      // Calculer Brightness
-      $brightness = $this->computeBrightness();
-      $brightness = $this->computeBrightnessByLimit($brightness);
-      // set brightness
-      $cmdBrightness->event($brightness);
-
       $activated = $this->getConfiguration('brightness_enable');
       log::add(__CLASS__, 'debug', '  Brightness activation:' . $activated);
       if ($activated == 0) {
         log::add(__CLASS__, 'debug', '  Luminosité non activé indique arrêt');
       } else {
+        // Calcul pour l'historique
+        $brightness = $this->computeBrightness();
+        $brightness = $this->computeBrightnessByLimit($brightness);
+        // set brightness
+        $cmdBrightness->event($brightness);
+
         // Gestion de la brightnessCondition
         $condition = $this->getConfiguration('brightnessCondition');
         $conditionResult = $this->evaluateCondition($condition);
@@ -558,7 +563,7 @@ class naturalLight extends eqLogic
         } else {
           // Lumière éteinte : on ne fait rien
           if ($cmdState == 1) {
-            log::add(__CLASS__, 'info', 'lampe allumée');
+            log::add(__CLASS__, 'info', 'lampe allumée');            
 
             // Executer brightness
             $cmd = $this->getLampBrightnessCommand();
@@ -581,65 +586,67 @@ class naturalLight extends eqLogic
         return;
       }
 
-      // Calcul de Température Couleur sur SunElevation
-      $temp_color = $this->computeTempColorBySunElevation($sunElevation);
-
-      // Plugin Ikea en %
-      if (
-        $this->getConfiguration('minValueDefault') == 0 &&
-        $this->getConfiguration('maxValueDefault') == 100
-      ) {
-        $temp_color = $this->computeTempColorForPercent($temp_color);
-      }
-
-      // Plugin inconnu en Kelvin
-      if (
-        $this->getConfiguration('minValueDefault') > 500 &&
-        $this->getConfiguration('maxValueDefault') > 500
-      ) {
-        $temp_color = $this->computeTempColorForKelvin($temp_color);
-      }
-
-      $cmd = $this->getLampTemperatureCommand();
-
-      // Recherche de la configuration
-      $minValue = $this->getConfiguration('minValue');
-      if (!isset($minValue)) {
-        // Ancien équipement sans valeur minValue
-        log::add(__CLASS__, 'debug', '  minValue pris de la lampe');
-        $minValue = $cmd->getConfiguration('minValue');
-      }
-      $maxValue = $this->getConfiguration('maxValue');
-      if (!isset($maxValue)) {
-        // Ancien équipement sans valeur maxValue
-        log::add(__CLASS__, 'debug', '  maxValue pris de la lampe');
-        $maxValue = $cmd->getConfiguration('maxValue');
-      }
-      log::add(__CLASS__, 'debug', '  minValue: ' . $minValue);
-      log::add(__CLASS__, 'debug', '  maxValue: ' . $maxValue);
-
-      if (!isset($minValue)) {
-        log::add(__CLASS__, 'error', '  minValue non renseignée');
-        throw new Exception('minValue non renseignée');
-      }
-      if (!isset($maxValue)) {
-        log::add(__CLASS__, 'error', '  maxValue non renseignée');
-        throw new Exception('maxValue non renseignée');
-      }
-      // -------------------------
-
-      // Calcul de la température couleur gérable par l'équipement
-      $temp_color = $this->computeTempColorByLimit($temp_color);
-      log::add(__CLASS__, 'info', 'température couleur: ' . $temp_color);
-
-      // set temp_color value
-      $cmdTempColor->event($temp_color);
-
       $activated = $this->getConfiguration('temperature_enable');
-      log::add(__CLASS__, 'debug', '  Température couleur activation:' . $activated);
+      log::add(__CLASS__, 'debug', '  Temperature activation:' . $activated);
       if ($activated == 0) {
-        log::add(__CLASS__, 'debug', '  Température couleur non activé indique arrêt');
+        log::add(__CLASS__, 'debug', '  Temperature non activé indique arrêt');
       } else {
+        // Calcul pour l'historique
+
+        // Calcul de Température Couleur sur SunElevation
+        $temp_color = $this->computeTempColorBySunElevation($sunElevation);
+
+        // Plugin Ikea en %
+        if (
+          $this->getConfiguration('minValueDefault') == 0 &&
+          $this->getConfiguration('maxValueDefault') == 100
+        ) {
+          $temp_color = $this->computeTempColorForPercent($temp_color);
+        }
+
+        // Plugin inconnu en Kelvin
+        if (
+          $this->getConfiguration('minValueDefault') > 500 &&
+          $this->getConfiguration('maxValueDefault') > 500
+        ) {
+          $temp_color = $this->computeTempColorForKelvin($temp_color);
+        }
+
+        $cmd = $this->getLampTemperatureCommand();
+
+        // // Recherche de la configuration
+        // $minValue = $this->getConfiguration('minValue');
+        // if (!isset($minValue)) {
+        //   // Ancien équipement sans valeur minValue
+        //   log::add(__CLASS__, 'debug', '  minValue pris de la lampe');
+        //   $minValue = $cmd->getConfiguration('minValue');
+        // }
+        // $maxValue = $this->getConfiguration('maxValue');
+        // if (!isset($maxValue)) {
+        //   // Ancien équipement sans valeur maxValue
+        //   log::add(__CLASS__, 'debug', '  maxValue pris de la lampe');
+        //   $maxValue = $cmd->getConfiguration('maxValue');
+        // }
+        // log::add(__CLASS__, 'debug', '  minValue: ' . $minValue);
+        // log::add(__CLASS__, 'debug', '  maxValue: ' . $maxValue);
+
+        // if (!isset($minValue)) {
+        //   log::add(__CLASS__, 'error', '  minValue non renseignée');
+        //   throw new Exception('minValue non renseignée');
+        // }
+        // if (!isset($maxValue)) {
+        //   log::add(__CLASS__, 'error', '  maxValue non renseignée');
+        //   throw new Exception('maxValue non renseignée');
+        // }
+        // -------------------------
+
+        // Calcul de la température couleur gérable par l'équipement
+        $temp_color = $this->computeTempColorByLimit($temp_color);
+        log::add(__CLASS__, 'info', 'température couleur: ' . $temp_color);
+
+        // set temp_color value
+        $cmdTempColor->event($temp_color);
+      
         // Gestion de la condition
         $condition = $this->getConfiguration('condition');
         $conditionResult = $this->evaluateCondition($condition);
@@ -882,9 +889,7 @@ class naturalLight extends eqLogic
   private function computeBrightness(): int
   {
     log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
-
-    $brightness = '';
-
+    
     // Initialisation Timestamp
     try {
       $configs = config::byKeys(array('timezone', 'log::level'));
@@ -894,6 +899,8 @@ class naturalLight extends eqLogic
     } catch (Exception $e) {
     } catch (Error $e) {
     }
+
+    $brightness = 0;
 
     // get configuration
     $morningHour = $this->getConfiguration('morningHour');
@@ -954,6 +961,8 @@ class naturalLight extends eqLogic
 
   private function computeBrightnessByLimit($brightness): int
   {
+    log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+    
     // Recherche de la configuration
     $minBrightnessValue = $this->getConfiguration('minBrightnessValue');
     $maxBrightnessValue = $this->getConfiguration('maxBrightnessValue');

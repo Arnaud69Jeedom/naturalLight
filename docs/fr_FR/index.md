@@ -44,7 +44,7 @@ Cette partie permet de gérer la modification de la température couleur de la l
 - Activer : Permet d'activer cette partie
 - Température couleur : la commande de la lampe permettant de modifier la température couleur.
     La commande doit avoir le type générique "Lumière luminosité" (LIGHT_SET_COLOR_TEMP)
-Note : Le choix de la commande de la lampe permet de récupérer les valeurs min et max par défaut de la commande
+Note : Le choix de la commande de la lampe permet de récupérer les valeurs min et max par défaut de la commande lors de l'enregistrement
 - Valeur min et max : valeur minimum et maximum, dans l'unité de la lampe et pas forcément en mired.
 La valeur Température couleur sera alors modifiée automatiquement selon l'élévation du soleil, tout en respectant ces bornes.
 - Condition de lancement : Condition pour que la gestion soit activée.
@@ -55,7 +55,7 @@ Cette partie permet de gérer la modification de la luminosité de la lampe.
 - Activer : Permet d'activer cette partie
 - Luminosité : Pla commande de la lampe permettant de modifier la luminosité.
     La commande doit avoir le type générique "Lumière slider" (LIGHT_SLIDER)
- Note : Le choix de la commande de la lampe permet de récupérer les valeurs min et max par défaut de la commande
+ Note : Le choix de la commande de la lampe permet de récupérer les valeurs min et max par défaut de la commande lors de l'enregistrement
  - Valeur min et max : valeur minimum et maximum, en général entre 0 et 254.
 La valeur Luminosité sera alors modifiée automatiquement selon les horaires, tout en respectant ces bornes.
 - Heure matin : Heure à partir de laquelle la luminosité va passer du minimum au maximum.
