@@ -27,7 +27,7 @@ $("#table_cmd").sortable({
 /* Fonction permettant l'affichage des commandes dans l'équipement */
 function addCmdToTable(_cmd) {
   if (!isset(_cmd)) {
-    var _cmd = {configuration: {}}
+    var _cmd = { configuration: {} }
   }
   if (!isset(_cmd.configuration)) {
     _cmd.configuration = {}
@@ -61,22 +61,22 @@ function addCmdToTable(_cmd) {
   tr += '</div>'
   tr += '</td>'
   tr += '<td>';
-  tr += '<span class="cmdAttr" data-l1key="htmlstate"></span>'; 
+  tr += '<span class="cmdAttr" data-l1key="htmlstate"></span>';
   tr += '</td>';
   tr += '<td>'
   if (is_numeric(_cmd.id)) {
     tr += '<a class="btn btn-default btn-xs cmdAction" data-action="configure"><i class="fas fa-cogs"></i></a> '
     tr += '<a class="btn btn-default btn-xs cmdAction" data-action="test"><i class="fas fa-rss"></i> Tester</a>'
   }
-  tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove" title="{{Supprimer la commande}}"></i></td>'
+  // tr += '<i class="fas fa-minus-circle pull-right cmdAction cursor" data-action="remove" title="{{Supprimer la commande}}"></i></td>'
   tr += '</tr>'
   $('#table_cmd tbody').append(tr)
   var tr = $('#table_cmd tbody tr').last()
   jeedom.eqLogic.buildSelectCmd({
-    id:  $('.eqLogicAttr[data-l1key=id]').value(),
-    filter: {type: 'info'},
+    id: $('.eqLogicAttr[data-l1key=id]').value(),
+    filter: { type: 'info' },
     error: function (error) {
-      $('#div_alert').showAlert({message: error.message, level: 'danger'})
+      $('#div_alert').showAlert({ message: error.message, level: 'danger' })
     },
     success: function (result) {
       tr.find('.cmdAttr[data-l1key=value]').append(result)
@@ -88,7 +88,7 @@ function addCmdToTable(_cmd) {
 
 $(".eqLogic").delegate(".listCmdInfo", 'click', function () {
   var el = $(this).closest('.form-group').find('.eqLogicAttr');
-  jeedom.cmd.getSelectModal({cmd: {type: 'info',subType : 'binary'}}, function (result) {
+  jeedom.cmd.getSelectModal({ cmd: { type: 'info', subType: 'binary' } }, function (result) {
     if (el.attr('data-concat') == 1) {
       el.atCaret('insert', result.human);
     } else {
@@ -99,7 +99,7 @@ $(".eqLogic").delegate(".listCmdInfo", 'click', function () {
 
 $(".eqLogic").delegate(".listCmdInfoCondition", 'click', function () {
   var el = $(this).closest('.form-group').find('.eqLogicAttr');
-  jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
+  jeedom.cmd.getSelectModal({ cmd: { type: 'info' } }, function (result) {
     if (el.attr('data-concat') == 1) {
       el.atCaret('insert', result.human);
     } else {
@@ -108,9 +108,9 @@ $(".eqLogic").delegate(".listCmdInfoCondition", 'click', function () {
   });
 });
 
-$("body").on('click',".listCmdAction", function () {
+$("body").on('click', ".listCmdAction", function () {
   var el = $(this).closest('.form-group').find('.eqLogicAttr');
-  jeedom.cmd.getSelectModal({cmd: {type: 'action',subType : 'slider'}}, function (result) {
+  jeedom.cmd.getSelectModal({ cmd: { type: 'action', subType: 'slider' } }, function (result) {
     el.value(result.human);
   });
 });

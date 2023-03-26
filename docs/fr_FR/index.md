@@ -34,11 +34,37 @@ Il n'est pas nécessaire de cocher "Visible", les informations affichées seront
 ## Onglet Lumières
 
 Cet onglet permet de sélectionner la lampe qu'on souhaite gérer.
-Il faut alors renseigner 2 informations :
-- Température couleur : la commande de la lampe permettant de modifier la température couleur,
-- Lampe état : la commandede la lampe  permettant de savoir si la lampe est allumer ou éteinte.
 
-NOTE : le type générique pour la commande "Température couleur" est vérifié et doit être à 'LIGHT_SET_COLOR_TEMP'
+Le paramétrage s'effectue sur 3 zones :
+- Lampe état : Renseigner la commande qui permet de connaitre l'état de la lampe
+    La commande doit avoir le type générique "Lumière état" (LIGHT_STATE) 
+
+- Température lampe :
+Cette partie permet de gérer la modification de la température couleur de la lampe.
+- Activer : Permet d'activer cette partie
+- Température couleur : la commande de la lampe permettant de modifier la température couleur.
+    La commande doit avoir le type générique "Lumière luminosité" (LIGHT_SET_COLOR_TEMP)
+Note : Le choix de la commande de la lampe permet de récupérer les valeurs min et max par défaut de la commande lors de l'enregistrement
+- Valeur min et max : valeur minimum et maximum, dans l'unité de la lampe et pas forcément en mired.
+La valeur Température couleur sera alors modifiée automatiquement selon l'élévation du soleil, tout en respectant ces bornes.
+- Condition de lancement : Condition pour que la gestion soit activée.
+    Si non renseignée, alors la température est modifiée comme souhaitée.
+
+- Luminosité lampe :
+Cette partie permet de gérer la modification de la luminosité de la lampe.
+- Activer : Permet d'activer cette partie
+- Luminosité : Pla commande de la lampe permettant de modifier la luminosité.
+    La commande doit avoir le type générique "Lumière slider" (LIGHT_SLIDER)
+ Note : Le choix de la commande de la lampe permet de récupérer les valeurs min et max par défaut de la commande lors de l'enregistrement
+ - Valeur min et max : valeur minimum et maximum, en général entre 0 et 254.
+La valeur Luminosité sera alors modifiée automatiquement selon les horaires, tout en respectant ces bornes.
+- Heure matin : Heure à partir de laquelle la luminosité va passer du minimum au maximum.
+- Durée : Durée en minute pour gérer la transition de la luminosité
+- Heure soir : Heure à partir de laquelle la luminosité va passer du maximum au minimum.
+- Durée : Durée en minute pour gérer la transition de la luminosité
+- Condition de lancement : Condition pour que la gestion soit activée.
+    Si non renseignée, alors la luminosité est modifiée comme souhaitée.
+
 
 ![Configuration Plugin](../images/Equipement_Lumi%C3%A8res.png)
 
@@ -46,8 +72,9 @@ NOTE : le type générique pour la commande "Température couleur" est vérifié
 
 L'onglet Commandes permet de voir les commandes créées :
 - Rafraichir : permet de forcer le calcul de la couleur à appliquer.
+- Luminosité : Indique la luminosité qui sera à appliquer.
 - Sun Elevation : Indique l'élévation du soleil.
-- Temperature color : Température couleur à appliquer.
+- Temperature color : Température couleur qui sera à appliquer.
 
 ![Configuration Plugin](../images/Equipement_Commandes.png)
 
