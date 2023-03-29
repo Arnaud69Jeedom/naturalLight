@@ -4,19 +4,24 @@
 >
 >S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
-# 26/03/2023
+# 29/03/2023 - DEBUG & STABLE
 
-- Version Stable : Ajout de la gestion de la luminosité
+- Debug : Le type devrait aussi pouvoir etre « LIGHT_STATE_BOOL »
+(merci @scanab)
 
-# 12/03/2023
+# 26/03/2023 - STABLE
+
+- Ajout de la gestion de la luminosité
+
+# 12/03/2023 - DEBUG
 
 - Debug sur la gestion des options désactivées
 
-# 11/03/2023
+# 11/03/2023 - DEBUG
 
 - Ajout de la gestion de la Luminosité en fonction de l'heure
 
-# 24/02/2023
+# 24/02/2023 - DEBUG
 
 - DEBUG : Permettre toutes les commandes de type Info pour la Condition
 
