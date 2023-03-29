@@ -297,7 +297,7 @@ class naturalLight extends eqLogic
         $isValid = false;
       } else {
         $genericType = $cmdLampState->getGeneric_type();
-        if ($genericType != 'LIGHT_STATE') {
+        if ($genericType != 'LIGHT_STATE' && $genericType != 'LIGHT_STATE_BOOL') {
           array_push($messages, 'Mauvais type générique');
           $isValid = false;
         }
