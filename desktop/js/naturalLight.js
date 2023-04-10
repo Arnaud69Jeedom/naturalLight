@@ -98,7 +98,7 @@ $(".eqLogic").delegate(".listCmdInfoBinary", 'click', function () {
 });
 
 $(".eqLogic").delegate(".listCmdInfo", 'click', function () {
-  var el = $(this).closest('.form-group').find('.eqLogicAttr').first();
+  var el = $(this).closest('.form-group').find('.eqLogicAttr');
   jeedom.cmd.getSelectModal({ cmd: { type: 'info' } }, function (result) {
     if (el.attr('data-concat') == 1) {
       el.atCaret('insert', result.human);

@@ -8,7 +8,7 @@
 
 - Debug : Ne plus bloquer si le type générique n'est pas le bon
           Tentative pour gérer une lampe Yeelight
-- NEW : Gestion d'un commande pour les horaires de Luminosité
+- NEW : Gestion d'un commande pour les horaires matin et soir de Luminosité
 
 # 29/03/2023 - DEBUG & STABLE
 

@@ -284,9 +284,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 
 								<div class="form-group">
 									<label class="col-sm-4 control-label">Heure matin</label>
-									<div class="col-sm-2">
+									<div class="col-xs-11 col-sm-8">
 										<div class="input-group">
-											<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="morningHour">
+											<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="morningHour">
 											<span class="input-group-btn">
 												<a class="btn btn-default listCmdInfo">
 													<i class="fas fa-list-alt"></i>
@@ -294,17 +294,20 @@ $eqLogics = eqLogic::byType($plugin->getId());
 											</span>
 										</div>
 									</div>
-									<label class="col-sm-2 control-label">Durée<sub>(min)</sub></label>
-									<div class="col-sm-2 has-success">
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-4 control-label">Durée matin<sub>(min)</sub></label>
+									<div class="col-sm-2">
 										<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="morningDuration" value="60">
 									</div>
 								</div>
 
 								<div class="form-group">
 									<label class="col-sm-4 control-label">Heure soir</label>
-									<div class="col-sm-2">
+									<div class="col-xs-11 col-sm-8">
 										<div class="input-group">
-											<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="eveningHour">
+											<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="eveningHour">
 											<span class="input-group-btn">
 												<a class="btn btn-default listCmdInfo">
 													<i class="fas fa-list-alt"></i>
@@ -312,8 +315,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
 											</span>
 										</div>
 									</div>
-									<label class="col-sm-2 control-label">Durée<sub>(min)</sub></label>
-									<div class="col-sm-2 has-success">
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-4 control-label">Durée soir<sub>(min)</sub></label>
+									<div class="col-sm-2">
 										<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="eveningDuration" value="60">
 									</div>
 								</div>
