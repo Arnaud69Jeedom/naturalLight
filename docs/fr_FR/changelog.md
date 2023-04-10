@@ -4,6 +4,11 @@
 >
 >S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 10/04/2023 - DEBUG
+
+- Debug : Ne plus bloquer si le type générique n'est pas le bon
+          Tentative pour gérer une lampe Yeelight
+
 # 29/03/2023 - DEBUG & STABLE
 
 - Debug : Le type devrait aussi pouvoir etre « LIGHT_STATE_BOOL »

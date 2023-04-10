@@ -65,14 +65,14 @@ class naturalLight extends eqLogic
    */
   private function getListener()
   {
-    log::add(__CLASS__, 'debug', 'getListener');
+    // log::add(__CLASS__, 'debug', 'getListener');
 
     return listener::byClassAndFunction(__CLASS__, 'pullRefresh', array('id' => $this->getId()));
   }
 
   private function removeListener()
   {
-    log::add(__CLASS__, 'debug', 'remove Listener');
+    // log::add(__CLASS__, 'debug', 'remove Listener');
 
     $listener = $this->getListener();
     if (is_object($listener)) {
@@ -82,7 +82,7 @@ class naturalLight extends eqLogic
 
   private function setListener()
   {
-    log::add(__CLASS__, 'debug', 'setListener');
+    // log::add(__CLASS__, 'debug', 'setListener');
 
     if ($this->getIsEnable() == 0) {
       $this->removeListener();
@@ -113,9 +113,9 @@ class naturalLight extends eqLogic
   public function preSave()
   {
     log::add(__CLASS__, 'debug', '*** save ***');
+    log::add(__CLASS__, 'info', 'save sur : ' . $this->getHumanName());
 
     // Mise à jour sous info
-    log::add(__CLASS__, 'debug', '  Vérification');
     $cmdLampe = $this->getLampTemperatureCommand(true);
     if ($cmdLampe != null) {
       log::add(__CLASS__, 'debug', '  cmdLampe renseigné');
@@ -165,8 +165,6 @@ class naturalLight extends eqLogic
       // Vérifier Heure matin < Heure soir
     }
     unset($cmdLampe);
-
-    // ******************************
   }
 
   // Fonction exécutée automatiquement après la sauvegarde (création ou mise à jour) de l'équipement
@@ -241,27 +239,20 @@ class naturalLight extends eqLogic
     $brightness->save();
     unset($brightness);
 
+    // Vérification
+    log::add(__CLASS__, 'debug', '  Vérification');
+    $isValid = $this->checkAllConfiguration();
+    // if (!$isValid) {
+    //   throw new Exception('Paramétrage invalide. Voir les logs');
+    // }
+    
     // Listener ajouté sur la lampe, uniquement si elle est paramétrée
     $lamp_state = $this->getConfiguration('lamp_state');
     if (empty($lamp_state)) {
       return;
     }
 
-    $this->setListener();
-
-    // Vérification
-    $isValid = $this->checkLampState();
-    if (!$isValid) {
-      throw new Exception('Paramétrage invalide. Voir les logs');
-    }
-    $isValid = $this->checkTemperatureConfiguration();
-    if (!$isValid) {
-      throw new Exception('Paramétrage invalide. Voir les logs');
-    }
-    $isValid = $this->checkBrightnessConfiguration();
-    if (!$isValid) {
-      throw new Exception('Paramétrage invalide. Voir les logs');
-    }
+    $this->setListener();    
   }
 
   // Fonction exécutée automatiquement avant la suppression de l'équipement
@@ -275,12 +266,36 @@ class naturalLight extends eqLogic
   {
   }
 
-/**
+  /**
+   * Check complet
+   * @return true si le paramétrage est correct, false sinon
+   */
+  public function checkAllConfiguration() : bool {
+    // Vérification
+    $isValid = $this->checkLampState();
+    // if (!$isValid) {
+    //   throw new Exception('Paramétrage invalide. Voir les logs');
+    // }
+    $isValid &= $this->checkTemperatureConfiguration();
+    // if (!$isValid) {
+    //   throw new Exception('Paramétrage invalide. Voir les logs');
+    // }
+    $isValid &= $this->checkBrightnessConfiguration();
+    // if (!$isValid) {
+    //   throw new Exception('Paramétrage invalide. Voir les logs');
+    // }
+
+    return $isValid;
+  }
+
+  /**
    * Vérifier le paramétrage lié à l'état de la lampe
    * En cas de non validité, le log indique l'erreur
    * @return true si le paramétrage est correct, false sinon
    */
   public function checkLampState() : bool {
+    log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+
     $isValid = true;
     $messages = [];
 
@@ -296,9 +311,9 @@ class naturalLight extends eqLogic
         array_push($messages, 'Commande invalide');
         $isValid = false;
       } else {
-        $genericType = $cmdLampState->getGeneric_type();
+        $genericType = $cmdLampState->getGeneric_type() ?? '(empty)';
         if ($genericType != 'LIGHT_STATE' && $genericType != 'LIGHT_STATE_BOOL') {
-          array_push($messages, 'Mauvais type générique');
+          array_push($messages, 'Mauvais type générique : ' . $genericType);
           $isValid = false;
         }
       }
@@ -306,7 +321,7 @@ class naturalLight extends eqLogic
 
     // Gestion des erreurs
     foreach($messages as $message) {
-      log::add(__CLASS__, 'error', '  checkTemperatureConfiguration: '.$message);
+      log::add(__CLASS__, 'error', '  Lampe état : ' . $message);
     }
     return $isValid;
   }
@@ -317,6 +332,8 @@ class naturalLight extends eqLogic
    * @return true si le paramétrage est correct, false sinon
    */
   public function checkTemperatureConfiguration() : bool {
+    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+
     $isValid = true;
     $messages = [];
 
@@ -338,9 +355,9 @@ class naturalLight extends eqLogic
         array_push($messages, 'Commande invalide');
         $isValid = false;
       } else {
-        $genericType = $cmdTempColor->getGeneric_type();
+        $genericType = $cmdTempColor->getGeneric_type() ?? '(empty)';
         if ($genericType != 'LIGHT_SET_COLOR_TEMP') {
-          array_push($messages, 'Mauvais type générique');
+          array_push($messages, 'Mauvais type générique : ' . $genericType);
           $isValid = false;
         }
       }
@@ -392,7 +409,7 @@ class naturalLight extends eqLogic
 
     // Gestion des erreurs
     foreach($messages as $message) {
-      log::add(__CLASS__, 'error', '  checkTemperatureConfiguration: '.$message);
+      log::add(__CLASS__, 'error', '  Température Lampe : ' . $message);
     }
     return $isValid;
   }
@@ -403,7 +420,7 @@ class naturalLight extends eqLogic
    * @return true si le paramétrage est correct, false sinon
    */
   public function checkBrightnessConfiguration() : bool {
-    log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
 
     $isValid = true;
     $messages = [];
@@ -426,9 +443,9 @@ class naturalLight extends eqLogic
         array_push($messages, 'Commande invalide');
         $isValid = false;
       } else {
-        $genericType = $cmdBrightnessColor->getGeneric_type();
+        $genericType = $cmdBrightnessColor->getGeneric_type() ?? '(empty)';
         if ($genericType != 'LIGHT_SLIDER') {
-          array_push($messages, 'Mauvais type générique');
+          array_push($messages, 'Mauvais type générique : ' . $genericType);
           $isValid = false;
         }
       }
@@ -512,7 +529,7 @@ class naturalLight extends eqLogic
 
     // Gestion des erreurs
     foreach($messages as $message) {
-      log::add(__CLASS__, 'error', '  checkTemperatureConfiguration: '.$message);
+      log::add(__CLASS__, 'error', '  Luminosité Lampe : ' . $message);
     }
     return $isValid;
   }
@@ -613,32 +630,6 @@ class naturalLight extends eqLogic
         }
 
         $cmd = $this->getLampTemperatureCommand();
-
-        // // Recherche de la configuration
-        // $minValue = $this->getConfiguration('minValue');
-        // if (!isset($minValue)) {
-        //   // Ancien équipement sans valeur minValue
-        //   log::add(__CLASS__, 'debug', '  minValue pris de la lampe');
-        //   $minValue = $cmd->getConfiguration('minValue');
-        // }
-        // $maxValue = $this->getConfiguration('maxValue');
-        // if (!isset($maxValue)) {
-        //   // Ancien équipement sans valeur maxValue
-        //   log::add(__CLASS__, 'debug', '  maxValue pris de la lampe');
-        //   $maxValue = $cmd->getConfiguration('maxValue');
-        // }
-        // log::add(__CLASS__, 'debug', '  minValue: ' . $minValue);
-        // log::add(__CLASS__, 'debug', '  maxValue: ' . $maxValue);
-
-        // if (!isset($minValue)) {
-        //   log::add(__CLASS__, 'error', '  minValue non renseignée');
-        //   throw new Exception('minValue non renseignée');
-        // }
-        // if (!isset($maxValue)) {
-        //   log::add(__CLASS__, 'error', '  maxValue non renseignée');
-        //   throw new Exception('maxValue non renseignée');
-        // }
-        // -------------------------
 
         // Calcul de la température couleur gérable par l'équipement
         $temp_color = $this->computeTempColorByLimit($temp_color);
@@ -999,11 +990,11 @@ class naturalLight extends eqLogic
         log::add(__CLASS__, 'info', 'lampe: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']');
 
         // Vérification du type generique
-        $genericType = $cmd->getGeneric_type();
-        log::add(__CLASS__, 'debug', '  getGenericType: ' . $genericType);
+        $genericType = $cmd->getGeneric_type() ?? '(empty)';
         if ($genericType != 'LIGHT_SET_COLOR_TEMP') {
-          log::add(__CLASS__, 'error', '  Mauvaise commande pour la lampe : temperature_color');
-          throw new Exception('Mauvaise commande pour la lampe : temperature_color');
+          log::add(__CLASS__, 'debug', '  getGenericType: ' . $genericType);
+          log::add(__CLASS__, 'warning', '  Mauvais type générique pour la commande : temperature_color');
+          // throw new Exception('Mauvaise commande pour la lampe : temperature_color');
         }
       }
     } else {
@@ -1021,7 +1012,7 @@ class naturalLight extends eqLogic
    */
   public function getLampBrightnessCommand(bool $initialisation = false): ?cmd
   {
-    log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
 
     $cmd = null;
     // Obtenir la commande Temperature Couleur
@@ -1036,11 +1027,11 @@ class naturalLight extends eqLogic
         log::add(__CLASS__, 'info', 'lampe: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']');
 
         // Vérification du type generique
-        $genericType = $cmd->getGeneric_type();
-        log::add(__CLASS__, 'debug', '  getGenericType: ' . $genericType);
+        $genericType = $cmd->getGeneric_type() ?? '(empty)';
         if ($genericType != 'LIGHT_SLIDER') {
-          log::add(__CLASS__, 'error', '  Mauvaise commande pour la lampe : brightness');
-          throw new Exception('Mauvaise commande pour la lampe : brightness');
+          log::add(__CLASS__, 'debug', '  getGenericType: ' . $genericType);
+          log::add(__CLASS__, 'warning', '  Mauvais type générique pour la commande : brightness');
+          //throw new Exception('Mauvaise commande pour la lampe : brightness');
         }
       }
     } else {
