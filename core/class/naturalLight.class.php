@@ -19,6 +19,14 @@
 require_once __DIR__  . '/../../../../core/php/core.inc.php';
 require_once dirname(__FILE__) . '/../../vendor/autoload.php';
 
+// Polyfill for PHP 4 - PHP 7, safe to utilize with PHP 8
+if (!function_exists('str_contains')) {
+  function str_contains (string $haystack, string $needle)
+  {
+      return empty($needle) || strpos($haystack, $needle) !== false;
+  }
+}
+
 class naturalLight extends eqLogic
 {
   /*     * *************************Attributs****************************** */
@@ -245,7 +253,7 @@ class naturalLight extends eqLogic
     // if (!$isValid) {
     //   throw new Exception('Paramétrage invalide. Voir les logs');
     // }
-    
+
     // Listener ajouté sur la lampe, uniquement si elle est paramétrée
     $lamp_state = $this->getConfiguration('lamp_state');
     if (empty($lamp_state)) {
@@ -901,6 +909,18 @@ class naturalLight extends eqLogic
 
     $minBrightness = $this->getconfiguration('minBrightnessValue');
     $maxBrightness = $this->getconfiguration('maxBrightnessValue');
+
+    // Evaluation horaire
+    if (str_contains($morningHour, '#')) {
+      log::add(__CLASS__, 'debug', '  morningHour avant :' . $morningHour);
+      $morningHour = jeedom::evaluateExpression($morningHour);
+      log::add(__CLASS__, 'debug', '  morningHour apres :' . $morningHour);
+    }
+    if (str_contains($eveningHour, '#')) {
+      log::add(__CLASS__, 'debug', '  eveningHour avant :' . $eveningHour);
+      $eveningHour = jeedom::evaluateExpression($eveningHour);
+      log::add(__CLASS__, 'debug', '  eveningHour apres :' . $eveningHour);
+    }
 
     // calcul
     $todayMorningTime = strtotime('today ' . $morningHour . ':00');

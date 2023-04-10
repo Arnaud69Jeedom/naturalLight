@@ -157,7 +157,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										<div class="input-group">
 											<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
 											<span class="input-group-btn">
-												<a class="btn btn-default listCmdInfo">
+												<a class="btn btn-default listCmdInfoBinary">
 													<i class="fas fa-list-alt"></i>
 												</a>
 											</span>
@@ -225,7 +225,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 											<div class="input-group">
 												<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="condition" data-concat="1" />
 												<span class="input-group-btn">
-													<a class="btn btn-default listCmdInfoCondition">
+													<a class="btn btn-default listCmdInfo">
 														<i class="fas fa-list-alt"></i>
 													</a>
 												</span>
@@ -287,7 +287,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<div class="col-sm-2">
 										<div class="input-group">
 											<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="morningHour">
-
+											<span class="input-group-btn">
+												<a class="btn btn-default listCmdInfo">
+													<i class="fas fa-list-alt"></i>
+												</a>
+											</span>
 										</div>
 									</div>
 									<label class="col-sm-2 control-label">Durée<sub>(min)</sub></label>
@@ -301,7 +305,11 @@ $eqLogics = eqLogic::byType($plugin->getId());
 									<div class="col-sm-2">
 										<div class="input-group">
 											<input class="eqLogicAttr form-control input-sm" data-l1key="configuration" data-l2key="eveningHour">
-
+											<span class="input-group-btn">
+												<a class="btn btn-default listCmdInfo">
+													<i class="fas fa-list-alt"></i>
+												</a>
+											</span>
 										</div>
 									</div>
 									<label class="col-sm-2 control-label">Durée<sub>(min)</sub></label>
@@ -318,7 +326,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										<div class="input-group">
 											<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="brightnessCondition" data-concat="1" />
 											<span class="input-group-btn">
-												<a class="btn btn-default listCmdInfoCondition">
+												<a class="btn btn-default listCmdInfo">
 													<i class="fas fa-list-alt"></i>
 												</a>
 											</span>
