@@ -915,11 +915,23 @@ class naturalLight extends eqLogic
       log::add(__CLASS__, 'debug', '  morningHour avant :' . $morningHour);
       $morningHour = jeedom::evaluateExpression($morningHour);
       log::add(__CLASS__, 'debug', '  morningHour apres :' . $morningHour);
+      if (is_numeric($morningHour) && strlen($morningHour) >= 3 && strlen($morningHour) <= 4) {
+        // Ajout de ':' dans l'heure
+        $pos = strlen($morningHour)-2;
+        $morningHour = substr_replace($morningHour, ':', $pos, 0);
+        log::add(__CLASS__, 'debug', '  morningHour ajout :' . $morningHour);
+      }
     }
     if (str_contains($eveningHour, '#')) {
       log::add(__CLASS__, 'debug', '  eveningHour avant :' . $eveningHour);
       $eveningHour = jeedom::evaluateExpression($eveningHour);
       log::add(__CLASS__, 'debug', '  eveningHour apres :' . $eveningHour);
+      if (is_numeric($eveningHour) && strlen($eveningHour) >= 3 && strlen($eveningHour) <= 4) {
+        // Ajout de ':' dans l'heure
+        $pos = strlen($eveningHour)-2;
+        $eveningHour = substr_replace($eveningHour, ':', $pos, 0);
+        log::add(__CLASS__, 'debug', '  eveningHour ajout :' . $eveningHour);
+      }
     }
 
     // calcul
