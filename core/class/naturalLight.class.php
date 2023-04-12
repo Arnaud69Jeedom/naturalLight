@@ -60,7 +60,7 @@ class naturalLight extends eqLogic
       log::add(__CLASS__, 'info', 'pullRefresh action sur : ' . $eqLogic->getHumanName());
 
       $lamp_state = $eqLogic->getLampState();
-      if ($lamp_state === 1) {
+      if ($lamp_state) {
         $eqLogic->computeLamp();
       }
     }
@@ -555,7 +555,7 @@ class naturalLight extends eqLogic
       $cmdState = $this->getLampState();
 
       if (
-        $cmdState === 0 &&
+        !$cmdState &&
         !$cmdSunElevation->getIsHistorized() &&
         !$cmdBrightness->getIsHistorized() &&
         !$cmdTempColor->getIsHistorized()
@@ -587,7 +587,7 @@ class naturalLight extends eqLogic
           log::add(__CLASS__, 'info', 'condition brightness indique arrêt');
         } else {
           // Lumière éteinte : on ne fait rien
-          if ($cmdState == 1) {
+          if ($cmdState) {
             log::add(__CLASS__, 'info', 'lampe allumée');            
 
             // Executer brightness
@@ -603,7 +603,7 @@ class naturalLight extends eqLogic
       }
 
       if (
-        $cmdState === 0 &&
+        !$cmdState &&
         !$cmdBrightness->getIsHistorized() &&
         !$cmdTempColor->getIsHistorized()
       ) {
@@ -653,7 +653,7 @@ class naturalLight extends eqLogic
           log::add(__CLASS__, 'info', 'condition Température couleur indique arrêt');
         } else {
           // Lumière éteinte : on ne fait rien
-          if ($cmdState == 1) {
+          if ($cmdState) {
             log::add(__CLASS__, 'info', 'lampe allumée');
             $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
           } else {
@@ -1077,12 +1077,14 @@ class naturalLight extends eqLogic
   }
 
   /**
-   * Obtenir l'état de la lampe (allumée 1 ou éteint 0)
+   * Obtenir l'état de la lampe
+   * allumée 1 ou On
+   * Eteint 0 ou Off
    */
-  private function getLampState(): int
+  private function getLampState(): bool
   {
     // Obtenir état de la lampe
-    $state = 0;
+    $state = false;
     $lamp_state = $this->getConfiguration('lamp_state');
     $lamp_state = str_replace('#', '', $lamp_state);
     if ($lamp_state != '') {
@@ -1091,8 +1093,22 @@ class naturalLight extends eqLogic
         log::add(__CLASS__, 'error', ' Mauvaise lamp_state :' . $lamp_state);
         throw new Exception('Mauvaise lamp_state');
       } else {
-        $state = boolval($cmd->execCmd()) ? 1 : 0;
+        $state = $cmd->execCmd();
         log::add(__CLASS__, 'debug', '  lamp_state: ' . $cmd->getEqLogic()->getHumanName() . '[' . $cmd->getName() . ']:' . $state);
+        if (is_numeric($state)) {
+          log::add(__CLASS__, 'debug', '  lamp_state: bool');
+          $state = boolval($state);
+        } else  if (strcasecmp('on', $state) === 0) {
+          log::add(__CLASS__, 'debug', '  lamp_state: on');
+          $state = true;
+        } else  if (strcasecmp('off', $state) === 0) {
+          log::add(__CLASS__, 'debug', '  lamp_state: off');
+          $state = false;
+        } else {
+          log::add(__CLASS__, 'debug', '  lamp_state: autre : off');
+          $state = false;
+        }
+        log::add(__CLASS__, 'debug', '  lamp_state est donc: ' . ($state ? 'true' : 'false'));
       }
     } else {
       log::add(__CLASS__, 'error', ' lamp_state non renseigné');

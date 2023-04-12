@@ -157,7 +157,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 										<div class="input-group">
 											<input type="text" class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="lamp_state" data-concat="0" />
 											<span class="input-group-btn">
-												<a class="btn btn-default listCmdInfoBinary">
+												<a class="btn btn-default listCmdInfo">
 													<i class="fas fa-list-alt"></i>
 												</a>
 											</span>

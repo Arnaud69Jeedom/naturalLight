@@ -4,6 +4,10 @@
 >
 >S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 12/04/2023 - DEBUG
+
+- DEBUG : Gestion de lampe avec le status On/Off (et non 1/0)
+
 # 11/04/2023 - DEBUG
 
 - NEW : Gestion des horaires donnés par le plugin Héliotrope (600 pour 6H00)

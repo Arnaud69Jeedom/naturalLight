@@ -86,16 +86,16 @@ function addCmdToTable(_cmd) {
   })
 }
 
-$(".eqLogic").delegate(".listCmdInfoBinary", 'click', function () {
-  var el = $(this).closest('.form-group').find('.eqLogicAttr');
-  jeedom.cmd.getSelectModal({ cmd: { type: 'info', subType: 'binary' } }, function (result) {
-    if (el.attr('data-concat') == 1) {
-      el.atCaret('insert', result.human);
-    } else {
-      el.value(result.human);
-    }
-  });
-});
+// $(".eqLogic").delegate(".listCmdInfoBinary", 'click', function () {
+//   var el = $(this).closest('.form-group').find('.eqLogicAttr');
+//   jeedom.cmd.getSelectModal({ cmd: { type: 'info', subType: 'binary' } }, function (result) {
+//     if (el.attr('data-concat') == 1) {
+//       el.atCaret('insert', result.human);
+//     } else {
+//       el.value(result.human);
+//     }
+//   });
+// });
 
 $(".eqLogic").delegate(".listCmdInfo", 'click', function () {
   var el = $(this).closest('.form-group').find('.eqLogicAttr');
