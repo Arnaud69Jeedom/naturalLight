@@ -329,7 +329,7 @@ class naturalLight extends eqLogic
 
     // Gestion des erreurs
     foreach($messages as $message) {
-      log::add(__CLASS__, 'error', '  Lampe état : ' . $message);
+      log::add(__CLASS__, 'warning', '  Lampe état : ' . $message);
     }
     return $isValid;
   }
@@ -417,7 +417,7 @@ class naturalLight extends eqLogic
 
     // Gestion des erreurs
     foreach($messages as $message) {
-      log::add(__CLASS__, 'error', '  Température Lampe : ' . $message);
+      log::add(__CLASS__, 'warning', '  Température Lampe : ' . $message);
     }
     return $isValid;
   }
@@ -537,7 +537,7 @@ class naturalLight extends eqLogic
 
     // Gestion des erreurs
     foreach($messages as $message) {
-      log::add(__CLASS__, 'error', '  Luminosité Lampe : ' . $message);
+      log::add(__CLASS__, 'warning', '  Luminosité Lampe : ' . $message);
     }
     return $isValid;
   }
@@ -622,10 +622,7 @@ class naturalLight extends eqLogic
         $temp_color = $this->computeTempColorBySunElevation($sunElevation);
 
         // Plugin Ikea en %
-        if (
-          $this->getConfiguration('minValueDefault') == 0 &&
-          $this->getConfiguration('maxValueDefault') == 100
-        ) {
+        if ($this->getConfiguration('maxValueDefault') == 100) {
           $temp_color = $this->computeTempColorForPercent($temp_color);
         }
 
@@ -636,8 +633,6 @@ class naturalLight extends eqLogic
         ) {
           $temp_color = $this->computeTempColorForKelvin($temp_color);
         }
-
-        $cmd = $this->getLampTemperatureCommand();
 
         // Calcul de la température couleur gérable par l'équipement
         $temp_color = $this->computeTempColorByLimit($temp_color);
@@ -655,6 +650,7 @@ class naturalLight extends eqLogic
           // Lumière éteinte : on ne fait rien
           if ($cmdState) {
             log::add(__CLASS__, 'info', 'lampe allumée');
+            $cmd = $this->getLampTemperatureCommand();
             $cmd->execCmd(array('slider' => $temp_color, 'transition' => 300));
           } else {
             log::add(__CLASS__, 'info', 'lampe éteinte');
@@ -821,9 +817,6 @@ class naturalLight extends eqLogic
     $mini = 153;
 
     $temp_color = 100 - intval(100 * ($maxi - $temp_color) / ($maxi - $mini));
-    // Correction selon borne
-    if ($temp_color < 0) $temp_color = 0;
-    if ($temp_color > 100) $temp_color = 100;
     log::add(__CLASS__, 'debug', '  temp_color corrigé :' . $temp_color . '%');
 
     return $temp_color;
@@ -857,7 +850,7 @@ class naturalLight extends eqLogic
     if ($temp_color < $minValue) {
       $temp_color = $minValue;
     }
-    log::add(__CLASS__, 'info', 'température couleur: ' . $temp_color);
+    log::add(__CLASS__, 'info', 'température couleur selon limites : ' . $temp_color);
 
     return $temp_color;
   }
