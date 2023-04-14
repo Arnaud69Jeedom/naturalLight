@@ -7,6 +7,7 @@
 # 14/04/2023 - DEBUG
 
 - DEBUG : Gestion de lampe avec Couleur en % (1 - 100)
+- DEBUG : Inversion sur la gestion en %
 
 # 12/04/2023 - DEBUG
 

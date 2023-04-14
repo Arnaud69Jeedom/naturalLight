@@ -813,10 +813,13 @@ class naturalLight extends eqLogic
 
     // plugin gérant la notion de pourcentage
     // ampoule Ikea : min=153 mired, max: 370 mired
-    $maxi = 370;
-    $mini = 153;
+    // $mini = 153;
+    // $maxi = 370;
+    // https://www.tanguayphotomag.biz/colour-temperature/mireds.html
+    $maxi = 526;// 1900K 
+    $mini = 154; // 6500K
 
-    $temp_color = 100 - intval(100 * ($maxi - $temp_color) / ($maxi - $mini));
+    $temp_color = intval(100 * ($maxi - $temp_color) / ($maxi - $mini));
     log::add(__CLASS__, 'debug', '  temp_color corrigé :' . $temp_color . '%');
 
     return $temp_color;
