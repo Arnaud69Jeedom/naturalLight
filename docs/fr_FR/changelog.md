@@ -4,6 +4,10 @@
 >
 >S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 24/04/2023 - STABLE
+
+- Gestion de lampe avec Couleur en % (1 - 100)
+
 # 14/04/2023 - DEBUG
 
 - DEBUG : Gestion de lampe avec Couleur en % (1 - 100)
