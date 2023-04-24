@@ -1,5 +1,3 @@
 TODO :
-* Debug Gestion Luminosité
-
 * Cron global pour calcul commun puis parcours des équipements
 (voir code proposé)

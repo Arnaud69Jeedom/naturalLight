@@ -4,6 +4,34 @@
 >
 >S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 24/04/2023 - STABLE
+
+- NEW : Gestion d'un commande pour les horaires matin et soir de Luminosité
+- NEW : Gestion des horaires donnés par le plugin Héliotrope (600 pour 6H00)
+- DEBUG : Gestion de lampe avec Couleur en % (1 - 100)
+- DEBUG : Gestion de lampe avec le status On/Off (et non 1/0)
+- Debug : Ne plus bloquer si le type générique n'est pas le bon
+          Tentative pour gérer une lampe Yeelight
+
+# 14/04/2023 - DEBUG
+
+- DEBUG : Gestion de lampe avec Couleur en % (1 - 100)
+- DEBUG : Inversion sur la gestion en %
+
+# 12/04/2023 - DEBUG
+
+- DEBUG : Gestion de lampe avec le status On/Off (et non 1/0)
+
+# 11/04/2023 - DEBUG
+
+- NEW : Gestion des horaires donnés par le plugin Héliotrope (600 pour 6H00)
+
+# 10/04/2023 - DEBUG
+
+- Debug : Ne plus bloquer si le type générique n'est pas le bon
+          Tentative pour gérer une lampe Yeelight
+- NEW : Gestion d'un commande pour les horaires matin et soir de Luminosité
+
 # 29/03/2023 - DEBUG & STABLE
 
 - Debug : Le type devrait aussi pouvoir etre « LIGHT_STATE_BOOL »
