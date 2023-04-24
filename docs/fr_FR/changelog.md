@@ -6,7 +6,12 @@
 
 # 24/04/2023 - STABLE
 
-- Gestion de lampe avec Couleur en % (1 - 100)
+- NEW : Gestion d'un commande pour les horaires matin et soir de Luminosité
+- NEW : Gestion des horaires donnés par le plugin Héliotrope (600 pour 6H00)
+- DEBUG : Gestion de lampe avec Couleur en % (1 - 100)
+- DEBUG : Gestion de lampe avec le status On/Off (et non 1/0)
+- Debug : Ne plus bloquer si le type générique n'est pas le bon
+          Tentative pour gérer une lampe Yeelight
 
 # 14/04/2023 - DEBUG
 
