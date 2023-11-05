@@ -38,12 +38,16 @@ class naturalLight extends eqLogic
   */
   public static function cron()
   {
-    log::add(__CLASS__, 'debug', '*** ' . __FUNCTION__ . ' ***');
+    log::add(__CLASS__, 'info', '*** ' . __FUNCTION__ . ' ***');
 
-    foreach (eqLogic::byType(__CLASS__, true) as $light) {
-      if ($light->getIsEnable() == 1) {
-        log::add(__CLASS__, 'info', ' > cron sur ' . $light->getHumanName());
-        $light->computeLamp();
+    // Calculer Sun elevation
+    $sunElevation = naturalLight::computeSunElevation();
+    $temp_color = naturalLight::computeTempColorBySunElevation($sunElevation);
+
+    foreach (eqLogic::byType(__CLASS__, true) as $eqlogic) {
+      if ($eqlogic->getIsEnable() == 1) {
+        log::add(__CLASS__, 'info', ' > cron sur ' . $eqlogic->getHumanName());
+        $eqlogic->computeLamp($sunElevation, $temp_color);
       }
     }
   }
@@ -53,11 +57,11 @@ class naturalLight extends eqLogic
    */
   public static function pullRefresh($_option)
   {
-    log::add(__CLASS__, 'debug', '*** ' . __FUNCTION__ . ' ***');
+    log::add(__CLASS__, 'info', '*** ' . __FUNCTION__ . ' ***');
 
     $eqLogic = self::byId($_option['id']);
     if (is_object($eqLogic) && $eqLogic->getIsEnable() == 1) {
-      log::add(__CLASS__, 'info', 'pullRefresh action sur : ' . $eqLogic->getHumanName());
+      log::add(__CLASS__, 'info', ' > pullRefresh action sur : ' . $eqLogic->getHumanName());
 
       $lamp_state = $eqLogic->getLampState();
       if ($lamp_state) {
@@ -542,7 +546,7 @@ class naturalLight extends eqLogic
     return $isValid;
   }
 
-  public function computeLamp()
+  public function computeLamp(float $sunElevation = null, int $temp_color = null)
   {
     log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
 
@@ -564,8 +568,10 @@ class naturalLight extends eqLogic
         return;
       }
 
-      // Calculer Sun elevation
-      $sunElevation = $this->computeSunElevation();
+      // // Calculer Sun elevation
+      if ($sunElevation == null) {
+        $sunElevation = $this->computeSunElevation();
+      }
       // set Sun Elevation value
       $cmdSunElevation->event($sunElevation);
 
@@ -619,8 +625,9 @@ class naturalLight extends eqLogic
         // Calcul pour l'historique
 
         // Calcul de Température Couleur sur SunElevation
-        $temp_color = $this->computeTempColorBySunElevation($sunElevation);
-
+        if ($temp_color == null) {
+          $temp_color = naturalLight::computeTempColorBySunElevation($sunElevation);
+        }
         // Plugin Ikea en %
         if ($this->getConfiguration('maxValueDefault') == 100) {
           $temp_color = $this->computeTempColorForPercent($temp_color);
@@ -742,7 +749,7 @@ class naturalLight extends eqLogic
    * Calculer la hauteur du soleil
    * @return {float} Hauteur du soleil
    */
-  private function computeSunElevation(): float
+  private static function computeSunElevation(): float
   {
     log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
 
@@ -783,9 +790,10 @@ class naturalLight extends eqLogic
    * @param {int} $sunElevation Position du soleil en °
    * @return {int} Température de la couleur en mired
    */
-  private function computeTempColorBySunElevation($sunElevation): int
+  private static function computeTempColorBySunElevation($sunElevation): int
   {
-    // log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__ . ' (test)');
+    log::add(__CLASS__, 'debug', 'fonction: ' . __FUNCTION__);
+    
     $correctedSunElevation = $sunElevation;
     if ($correctedSunElevation < 0) {
       $correctedSunElevation = 0;
@@ -1145,6 +1153,7 @@ class naturalLightCmd extends cmd
 
     if ($this->getLogicalId() == 'refresh') {
       $eqlogic = $this->getEqLogic(); //récupère l'éqlogic de la commande $this
+      log::add('naturalLight', 'info', ' > refresh sur ' . $eqlogic->getHumanName());
       $eqlogic->computeLamp();
     }
   }

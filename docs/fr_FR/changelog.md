@@ -4,6 +4,14 @@
 >
 >S'il n'y a pas d'information sur la mise à jour, c'est que celle-ci concerne uniquement de la mise à jour de documentation, de traduction ou de texte.
 
+# 05/11/2023 - STABLE
+
+- NEW : Optimisation des calculs lors d'un cron
+
+# 26/04/2023 - DEBUG
+
+- NEW : Optimisation des calculs lors d'un cron
+
 # 24/04/2023 - STABLE
 
 - NEW : Gestion d'un commande pour les horaires matin et soir de Luminosité
