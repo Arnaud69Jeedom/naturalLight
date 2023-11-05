@@ -2,7 +2,7 @@
 	"id" : "naturalLight",
 	"name" : "Natural Light",
 	"description" : {
-		"fr_FR": "plugins naturalLight pour Jeedom"
+		"fr_FR": "plugins naturalLight pour Jeedom. Permet de moduler la luminosité et la couleur de la lumière en fonction de l'heure et de a position du soleil (adaptive lighting)"
 	},
 	"licence" : "AGPL",
 	"author" : "Arnaud_69",
